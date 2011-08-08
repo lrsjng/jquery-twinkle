@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project
+	name="jQuery.twinkle"
+	basedir="."
+	default="release"
+	xmlns:scripp="antlib:de.larsjung.scripp.ant"
+>
+	<target name="init">
+		<property file="build.properties" />
+		<tstamp>
+			<format property="build.stamp" pattern="yyyy-MM-dd-HHmmss" />
+		</tstamp>
+		<property name="build.label" value="${project.name} ${project.version} b${build.stamp}" />
+		<echo>Build: ${build.label}</echo>
+        <taskdef
+        	resource="de/larsjung/scripp/ant/antlib.xml"
+        	uri="antlib:de.larsjung.scripp.ant"
+        	classpath="${lib.scripp.jar}"
+        />
+	</target>
+
+
+	<target name="clean" depends="init">
+		<delete dir="${build.dir}" />
+		<delete dir="${release.dir}" />
+	</target>
+
+
+	<target name="build-prepare" depends="clean">
+		<mkdir dir="${build.dir}" />
+		<copy todir="${build.dir}">
+		    <fileset dir="${src.dir}" />
+			<fileset file="LICENSE.txt" />
+			<fileset file="README.md" />
+		</copy>
+		<replace dir="${build.dir}">
+			<replacefilter token="%BUILD%" value="${build.label}" />
+			<replacefilter token="%BUILD_NAME%" value="${project.name}" />
+			<replacefilter token="%BUILD_VERSION%" value="${project.version}" />
+			<replacefilter token="%BUILD_STAMP%" value="${build.stamp}" />
+		</replace>
+		<scripp:js file="${build.dir}/jquery.twinkle.js" tofile="${build.dir}/jquery.twinkle-${project.version}.js" />
+		<scripp:jsmin file="${build.dir}/jquery.twinkle.js" tofile="${build.dir}/jquery.twinkle-${project.version}.min.js" />
+		<delete file="${build.dir}/jquery.twinkle.js" />		
+	</target>
+
+
+	<target name="build" depends="build-prepare">
+
+	</target>
+
+
+	<target name="build-uncompressed" depends="build-prepare">
+
+	</target>
+
+
+	<target name="release" depends="build">
+		<mkdir dir="${release.dir}" />
+		<tar destfile="${release.dir}/${project.name}-${project.version}.tar" basedir="${build.dir}"/>
+		<gzip destfile="${release.dir}/${project.name}-${project.version}.tar.gz" src="${release.dir}/${project.name}-${project.version}.tar"/>
+		<delete file="${release.dir}/${project.name}-${project.version}.tar" />
+		<zip destfile="${release.dir}/${project.name}-${project.version}.zip" basedir="${build.dir}" />
+		<copy todir="${release.dir}">
+			<fileset file="${build.dir}/jquery.twinkle-${project.version}.js" />
+			<fileset file="${build.dir}/jquery.twinkle-${project.version}.min.js" />
+		</copy>
+	</target>
+
+
+	<macrodef name="scripp.dir">
+		<attribute name="dir" />
+		<attribute name="compress" default="true" />
+		<sequential>
+			<scripp:process compress="@{compress}">
+				<fileset dir="@{dir}" includes="**/*.less,**/*.css,**/*.js" excludes="inc/**/*,**/*.min.css,**/*.min.js" />
+				<globmapper from="*.less" to="*.css" />
+				<globmapper from="*.css" to="*.css" />
+				<globmapper from="*.js" to="*.js" />
+			</scripp:process>
+			<delete dir="@{dir}/inc">
+				<fileset dir="@{dir}" includes="**/*.less" />
+			</delete>
+		</sequential>
+	</macrodef>
+</project>
