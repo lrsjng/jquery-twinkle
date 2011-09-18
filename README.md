@@ -9,6 +9,11 @@ jQuery.twinkle is provided under the terms of the [MIT License](http://github.co
 ## Changelog
 
 
+### v0.4 · *2011-09-??*
+
+* 
+
+
 ### v0.3 · *2011-09-18*
 
 * refactored
