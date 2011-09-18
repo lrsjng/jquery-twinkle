@@ -9,10 +9,11 @@ jQuery.twinkle is provided under the terms of the [MIT License](http://github.co
 ## Changelog
 
 
-### v0.3 · *2011-08-xx*
+### v0.3 · *2011-09-18*
 
 * refactored
-* added callback support after effect finished
+* added callback support after effect completed
+* effects can be removed by ID
 
 
 ### v0.2 · *2011-08-12*
