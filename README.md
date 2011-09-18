@@ -9,6 +9,12 @@ jQuery.twinkle is provided under the terms of the [MIT License](http://github.co
 ## Changelog
 
 
+### v0.3 · *2011-08-xx*
+
+* refactored
+* added callback support after effect finished
+
+
 ### v0.2 · *2011-08-12*
 
 * changed names of built in effect from realase 0.1 (suffixed with `-css`)
