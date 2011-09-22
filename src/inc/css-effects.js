@@ -17,8 +17,7 @@
         },
         animation = function (css, event, settings, callback) {
 
-            var $dot = $("<div />").css(css).appendTo(event.element)
-                            .bind("click dblclick mousedown mouseenter mouseover mousemove", blockEvents),
+            var $dot,
                 cleanUp = function () {
                     $dot.remove();
                     if (callback instanceof Function) {
@@ -40,6 +39,10 @@
                     );
                 },
                 fadeIn = function () {
+                    $dot = $("<div />")
+                            .css(css)
+                            .bind("click dblclick mousedown mouseenter mouseover mousemove", blockEvents);
+                    $(event.element).after($dot);
                     $dot.animate(
                         {
                             left: event.position.left - settings.radius * 0.5,

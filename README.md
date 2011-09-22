@@ -9,9 +9,10 @@ jQuery.twinkle is provided under the terms of the [MIT License](http://github.co
 ## Changelog
 
 
-### v0.4 · *2011-09-??*
+### v0.4 · *2011-09-22*
 
-* 
+* fixed problem with closed tags like <input />, now all elements should be twinkable
+* removed `release` folder
 
 
 ### v0.3 · *2011-09-18*

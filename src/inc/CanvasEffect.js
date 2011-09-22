@@ -57,7 +57,8 @@
                     return false;
                 };
 
-            $canvas = $("<canvas />").attr("width", width).attr("height", height).css(css).appendTo(element);
+            $canvas = $("<canvas />").attr("width", width).attr("height", height).css(css);
+            $(element).after($canvas);
             $canvas.bind("click dblclick mousedown mouseenter mouseover mousemove", blockEvents);
             ctx = new Twinkle.Ctx($canvas.get(0).getContext("2d"));
 
