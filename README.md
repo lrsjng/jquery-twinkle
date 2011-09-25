@@ -11,12 +11,13 @@ jQuery.twinkle is provided under the terms of the [MIT License](http://github.co
 
 ### v0.5 · *2011-09-??*
 
-* 
+* refactored
+* updated ModPlug to version 0.6
 
 
 ### v0.4 · *2011-09-22*
 
-* fixed problem with closed tags like <input />, now all elements should be twinkable
+* fixed problem with closed tags like `&lt;input /&gt;`, now all elements should be twinkable
 * removed `release` folder
 
 

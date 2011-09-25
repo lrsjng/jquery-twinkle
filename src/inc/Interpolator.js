@@ -1,67 +1,58 @@
+/*globals Objects */
 
-(function (window, $, undefined) {
-    "use strict";
+Objects.Interpolator = function (values) {
 
-    var Twinkle = window.Twinkle = window.Twinkle || {};
+    var points,
+        equiDist = function (values) {
 
+            var dist = 1 / (values.length - 1),
+                points = [],
+                i;
 
-    Twinkle.Interpolator = function (values) {
+            for (i = 0; i < values.length; i += 1) {
+                points.push({ x: dist * i , y: values[i] });
+            }
+            return points;
+        },
+        interpolate = function (p1, p2, x) {
 
-        var points,
-            equiDist = function (values) {
+            var m = (p2.y - p1.y) / (p2.x - p1.x),
+                y = p1.y + m * (x - p1.x);
 
-                var dist = 1 / (values.length - 1),
-                    points = [],
-                    i;
+            return y;
+        },
+        findSection = function (x) {
 
-                for (i = 0; i < values.length; i++) {
-                    points.push({ x: dist * i , y: values[i] });
+            var i, prev, current;
+
+            for (i = 1; i < points.length; i += 1) {
+
+                prev = points[i-1];
+                current = points[i];
+                if (x >= prev.x && x <= current.x) {
+                    return [ prev, current ];
                 }
-                return points;
-            },
-            interpolate = function (p1, p2, x) {
-
-                var m = (p2.y - p1.y) / (p2.x - p1.x),
-                    y = p1.y + m * (x - p1.x);
-
-                return y;
-            },
-            findSection = function (x) {
-
-                for (var i = 0; i < points.length; i++) {
-
-                    if (i === 0) {
-                        continue;
-                    }
-
-                    var prev = points[i-1];
-                    var current = points[i];
-                    if (x >= prev.x && x <= current.x) {
-                        return [ prev, current ];
-                    }
-                }
-                return undefined;
-            };
-
-        points = equiDist(values);
-
-        this.get = function (x) {
-
-            var secPts;
-
-            x = Math.max(0, Math.min(1, x));
-            secPts = findSection(x);
-            return interpolate(secPts[0], secPts[1], x);
+            }
+            return undefined;
         };
 
+    points = equiDist(values);
+
+    this.get = function (x) {
+
+        var secPts;
+
+        x = Math.max(0, Math.min(1, x));
+        secPts = findSection(x);
+        return interpolate(secPts[0], secPts[1], x);
     };
 
-    Twinkle.Interpolator.scale = function (x, scale, offset) {
+};
 
-        scale = scale || 1;
-        offset = offset || 0;
-        x = (x - offset) / scale;
-        return x >= 0 && x <= 1 ? x : undefined;
-    };
+Objects.Interpolator.scale = function (x, scale, offset) {
 
-}(window, jQuery));
+    scale = scale || 1;
+    offset = offset || 0;
+    x = (x - offset) / scale;
+    return x >= 0 && x <= 1 ? x : undefined;
+};

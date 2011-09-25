@@ -5,8 +5,9 @@
  *
  * provided under the terms of the MIT License
  */
+/*globals jQuery */
 
-(function ($, undefined) {
+(function ($) {
     "use strict";
 
     var blockEvents = function (event) {
@@ -108,7 +109,7 @@
                         zIndex: 1000,
                         display: "block",
                         borderRadius: settings.radius,
-                        border: "" + settings.width + "px solid " + settings.color,
+                        border: settings.width + "px solid " + settings.color,
                         left: event.position.left,
                         top: event.position.top,
                         width: 0,
@@ -123,7 +124,7 @@
                     delay = 0,
                     i;
 
-                for (i = 0; i < settings.count; i++) {
+                for (i = 0; i < settings.count; i += 1) {
                     setTimer(delay, i === settings.count - 1 ? callback : undefined);
                     delay += settings.delay;
                 }
@@ -142,9 +143,7 @@
         };
 
 
-    $.twinkle.add(new SplashEffect());
-    $.twinkle.add(new DropEffect());
-    $.twinkle.add(new DropsEffect());
+    $.twinkle.add(new SplashEffect()).add(new DropEffect()).add(new DropsEffect());
 
 }(jQuery));
 

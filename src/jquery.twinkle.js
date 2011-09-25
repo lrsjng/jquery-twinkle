@@ -4,11 +4,13 @@
  *
  * provided under the terms of the MIT License
  */
+/*globals jQuery */
 
-// @include "inc/modplug-0.4.js"
+
+// @include "inc/modplug-0.6.js"
 
 
-(function ($, undefined) {
+(function ($) {
     "use strict";
 
     var defaults = {
@@ -102,43 +104,36 @@
                 return this;
             };
         },
-        twinkler = new Twinkler(),
-        plugin = {
-            statics: {
-                twinkle: function (element, left, top, options) {
+        twinkler = new Twinkler();
 
-                    twinkler.twinkle(new Event(0, 0, element, left, top), options);
-                    return this;
-                },
-                add: function (effect) {
+    $.ModPlug.plugin("twinkle", {
+        statics: {
+            twinkle: function (element, left, top, options) {
 
-                    twinkler.add(effect);
-                    return this;
-                },
-                remove: function (effect) {
-
-                    twinkler.remove(effect);
-                    return this;
-                }
+                twinkler.twinkle(new Event(0, 0, element, left, top), options);
+                return this;
             },
-            methods: {
-                twinkle: function (options) {
+            add: function (effect) {
 
-                    twinkler.twinkleAtElements(this, options);
-                    return this;
-                }
+                twinkler.add(effect);
+                return this;
             },
-            defaultStatic: function () {
+            remove: function (effect) {
 
-                return "twinkle";
-            },
-            defaultMethod: function () {
-
-                return "twinkle";
+                twinkler.remove(effect);
+                return this;
             }
-        };
+        },
+        methods: {
+            twinkle: function (options) {
 
-    $.ModPlug.plugin("twinkle", plugin);
+                twinkler.twinkleAtElements(this, options);
+                return this;
+            }
+        },
+        defaultStatic: "twinkle",
+        defaultMethod: "twinkle"
+    });
 
 }(jQuery));
 

@@ -1,49 +1,49 @@
+/*globals $, Objects */
 
-(function (window, $, undefined) {
+(function () {
 
-    var Twinkle = window.Twinkle = window.Twinkle || {},
-        Path = function (ctx) {
+    var Path = function (ctx) {
 
-            var context = ctx.getContext();
+        var context = ctx.getContext();
 
-            context.beginPath();
+        context.beginPath();
 
-            this.fill = function (fillStyle) {
+        this.fill = function (fillStyle) {
 
-                context.fillStyle = fillStyle;
-                context.fill();
-                return ctx;
-            };
-
-            this.stroke = function (lineWidth, strokeStyle) {
-
-                context.lineWidth = lineWidth;
-                context.strokeStyle = strokeStyle;
-                context.stroke();
-                return ctx;
-            };
-
-            this.draw = function (lineWidth, strokeStyle, fillStyle) {
-
-                this.fill(fillStyle);
-                this.stroke(lineWidth, strokeStyle);
-                return ctx;
-            };
-
-            this.circle = function (x, y, radius) {
-
-                context.arc(x, y, radius, 0, 2 * Math.PI, false);
-                return this;
-            };
+            context.fillStyle = fillStyle;
+            context.fill();
+            return ctx;
         };
 
+        this.stroke = function (lineWidth, strokeStyle) {
 
-    Twinkle.Ctx = function (context) {
+            context.lineWidth = lineWidth;
+            context.strokeStyle = strokeStyle;
+            context.stroke();
+            return ctx;
+        };
+
+        this.draw = function (lineWidth, strokeStyle, fillStyle) {
+
+            this.fill(fillStyle);
+            this.stroke(lineWidth, strokeStyle);
+            return ctx;
+        };
+
+        this.circle = function (x, y, radius) {
+
+            context.arc(x, y, radius, 0, 2 * Math.PI, false);
+            return this;
+        };
+    };
+
+
+    Objects.Ctx = function (context) {
 
         if (!context || !context.canvas) {
             return undefined;
-        } else if (!(this instanceof Twinkle.Ctx)) {
-            return new Twinkle.Ctx(context);
+        } else if (!(this instanceof Objects.Ctx)) {
+            return new Objects.Ctx(context);
         }
 
         var width = $(context.canvas).width(),
@@ -101,4 +101,4 @@
         };
     };
 
-}(window, jQuery));
+}());
