@@ -1,57 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project
-    name="jQuery.twinkle"
-    basedir="."
-    default="release"
+	name="jQuery.twinkle"
+	basedir="."
+	default="release"
 >
 
-    <import file="tools/wepp.ant.xml" />
+	<target name="init">
+		<property file="build.properties" />
+		<tstamp>
+			<format property="build.stamp" pattern="yyyy-MM-dd-HHmmss" />
+		</tstamp>
+		<property name="build.label" value="${project.name} ${project.version} b${build.stamp}" />
+		<echo>Build: ${build.label}</echo>
+	</target>
 
-    <target name="init">
-        <property file="build.properties" />
-        <tstamp>
-            <format property="build.stamp" pattern="yyyy-MM-dd-HHmmss" />
-        </tstamp>
-        <property name="build.label" value="${project.name} ${project.version} b${build.stamp}" />
-        <echo>Build: ${build.label}</echo>
-    </target>
+	<target name="clean" depends="init">
+		<delete dir="${build.dir}" />
+		<delete dir="${release.dir}" />
+	</target>
 
-    <target name="clean" depends="init">
-        <delete dir="${build.dir}" />
-        <delete dir="${release.dir}" />
-    </target>
+	<target name="build" depends="clean">
+		<mkdir dir="${build.dir}" />
+		<copy todir="${build.dir}">
+			<fileset dir="${src.dir}" />
+			<fileset file="LICENSE.txt" />
+			<fileset file="README.md" />
+		</copy>
+		<replace dir="${build.dir}">
+			<replacefilter token="%BUILD%" value="${build.label}" />
+			<replacefilter token="%BUILD_NAME%" value="${project.name}" />
+			<replacefilter token="%BUILD_VERSION%" value="${project.version}" />
+			<replacefilter token="%BUILD_STAMP%" value="${build.stamp}" />
+		</replace>
 
-    <target name="build" depends="clean">
-        <mkdir dir="${build.dir}" />
-        <copy todir="${build.dir}">
-            <fileset dir="${src.dir}" />
-            <fileset file="LICENSE.txt" />
-            <fileset file="README.md" />
-        </copy>
-        <replace dir="${build.dir}">
-            <replacefilter token="%BUILD%" value="${build.label}" />
-            <replacefilter token="%BUILD_NAME%" value="${project.name}" />
-            <replacefilter token="%BUILD_VERSION%" value="${project.version}" />
-            <replacefilter token="%BUILD_STAMP%" value="${build.stamp}" />
-        </replace>
+		<wepp file="${build.dir}/jquery.twinkle.js" tofile="${build.dir}/jquery.twinkle-${project.version}.js" />
+		<wepp-min file="${build.dir}/jquery.twinkle.js" tofile="${build.dir}/jquery.twinkle-${project.version}.min.js" />
 
-        <wepp file="${build.dir}/jquery.twinkle.js" tofile="${build.dir}/${project.name}-${project.version}.js" args="--nc" />
-        <wepp file="${build.dir}/jquery.twinkle.js" tofile="${build.dir}/${project.name}-${project.version}.min.js" />
+		<delete dir="${build.dir}/inc" />
+		<delete file="${build.dir}/jquery.twinkle.js" />
+	</target>
 
-        <delete dir="${build.dir}/inc" />
-        <delete file="${build.dir}/jquery.twinkle.js" />
-    </target>
+	<target name="release" depends="build">
+		<mkdir dir="${release.dir}" />
+		<zip destfile="${release.dir}/${project.name}-${project.version}.zip" basedir="${build.dir}" />
+		<copy todir="${release.dir}">
+			<fileset file="${build.dir}/jquery.twinkle-*.js" />
+		</copy>
+	</target>
 
-    <target name="release" depends="build">
-        <mkdir dir="${release.dir}" />
-        <tar destfile="${release.dir}/${project.name}-${project.version}.tar" basedir="${build.dir}"/>
-        <gzip destfile="${release.dir}/${project.name}-${project.version}.tar.gz" src="${release.dir}/${project.name}-${project.version}.tar"/>
-        <delete file="${release.dir}/${project.name}-${project.version}.tar" />
-        <zip destfile="${release.dir}/${project.name}-${project.version}.zip" basedir="${build.dir}" />
-        <copy todir="${release.dir}">
-            <fileset file="${build.dir}/jquery.twinkle-${project.version}.js" />
-            <fileset file="${build.dir}/jquery.twinkle-${project.version}.min.js" />
-        </copy>
-    </target>
+	<target name="jshint" depends="init">
+		<apply executable="${tool.jshint}" verbose="true" parallel="true">
+			<srcfile />
+			<arg line="--config jshint.json" />
+			<arg line="--show-non-errors" />
+			<fileset dir="${src.dir}">
+				<patternset>
+					<include name="**/*.js" />
+					<exclude name="lib/**/*" />
+				</patternset>
+			</fileset>
+		</apply>
+	</target>
+
+
+	<macrodef name="wepp-args">
+		<attribute name="args" default="" />
+		<sequential>
+			<exec executable="${tool.wepp}" failonerror="true">
+				<arg line="@{args}" />
+			</exec>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="wepp">
+		<attribute name="file" />
+		<attribute name="tofile" />
+		<sequential>
+			<wepp-args args="--nc --inFile '@{file}' --outFile '@{toFile}'" />
+		</sequential>
+	</macrodef>
+
+	<macrodef name="wepp-min">
+		<attribute name="file" />
+		<attribute name="tofile" />
+		<sequential>
+			<wepp-args args="--inFile '@{file}' --outFile '@{toFile}'" />
+		</sequential>
+	</macrodef>
+
+	<macrodef name="wepp-dir">
+		<attribute name="dir" />
+		<attribute name="todir" />
+		<sequential>
+			<wepp-args args="--nc --inDir '@{dir}' --outDir '@{todir}'" />
+			<delete dir="@{todir}/inc" >
+				<fileset dir="." includes="@{todir}/**/*.less" />
+			</delete>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="wepp-dir-min">
+		<attribute name="dir" />
+		<attribute name="todir" />
+		<sequential>
+			<wepp-args args="--inDir '@{dir}' --outDir '@{todir}'" />
+			<delete dir="@{todir}/inc" >
+				<fileset dir="." includes="@{todir}/**/*.less" />
+			</delete>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="docco">
+		<attribute name="dir" />
+		<attribute name="files" />
+		<sequential>
+			<exec executable="${tool.docco}" dir="@{dir}" failonerror="true">
+				<arg line="@{files}" />
+			</exec>
+		</sequential>
+	</macrodef>
 
 </project>

@@ -5,21 +5,20 @@
  *
  * provided under the terms of the MIT License
  */
-/*globals window, jQuery */
 
 (function ($) {
-    "use strict";
+	'use strict';
 
-    var Objects = {};
+	var Objects = {};
 
-    // @include "Interpolator.js"
-    // @include "Ctx.js"
-    // @include "CanvasEffect.js"
+	// @include "Interpolator.js"
+	// @include "Ctx.js"
+	// @include "CanvasEffect.js"
 
-    // @include "SplashEffect.js"
-    // @include "DropEffect.js"
-    // @include "DropsEffect.js"
-    // @include "PulseEffect.js"
-    // @include "OrbitEffect.js"
+	// @include "SplashEffect.js"
+	// @include "DropEffect.js"
+	// @include "DropsEffect.js"
+	// @include "PulseEffect.js"
+	// @include "OrbitEffect.js"
 
 }(jQuery));

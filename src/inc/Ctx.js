@@ -1,104 +1,103 @@
-/*globals $, Objects */
 
 (function () {
 
-    var Path = function (ctx) {
+	var Path = function (ctx) {
 
-        var context = ctx.getContext();
+		var context = ctx.getContext();
 
-        context.beginPath();
+		context.beginPath();
 
-        this.fill = function (fillStyle) {
+		this.fill = function (fillStyle) {
 
-            context.fillStyle = fillStyle;
-            context.fill();
-            return ctx;
-        };
+			context.fillStyle = fillStyle;
+			context.fill();
+			return ctx;
+		};
 
-        this.stroke = function (lineWidth, strokeStyle) {
+		this.stroke = function (lineWidth, strokeStyle) {
 
-            context.lineWidth = lineWidth;
-            context.strokeStyle = strokeStyle;
-            context.stroke();
-            return ctx;
-        };
+			context.lineWidth = lineWidth;
+			context.strokeStyle = strokeStyle;
+			context.stroke();
+			return ctx;
+		};
 
-        this.draw = function (lineWidth, strokeStyle, fillStyle) {
+		this.draw = function (lineWidth, strokeStyle, fillStyle) {
 
-            this.fill(fillStyle);
-            this.stroke(lineWidth, strokeStyle);
-            return ctx;
-        };
+			this.fill(fillStyle);
+			this.stroke(lineWidth, strokeStyle);
+			return ctx;
+		};
 
-        this.circle = function (x, y, radius) {
+		this.circle = function (x, y, radius) {
 
-            context.arc(x, y, radius, 0, 2 * Math.PI, false);
-            return this;
-        };
-    };
+			context.arc(x, y, radius, 0, 2 * Math.PI, false);
+			return this;
+		};
+	};
 
 
-    Objects.Ctx = function (context) {
+	Objects.Ctx = function (context) {
 
-        if (!context || !context.canvas) {
-            return undefined;
-        } else if (!(this instanceof Objects.Ctx)) {
-            return new Objects.Ctx(context);
-        }
+		if (!context || !context.canvas) {
+			return undefined;
+		} else if (!(this instanceof Objects.Ctx)) {
+			return new Objects.Ctx(context);
+		}
 
-        var width = $(context.canvas).width(),
-            height = $(context.canvas).height();
+		var width = $(context.canvas).width(),
+			height = $(context.canvas).height();
 
-        this.getContext = function () {
+		this.getContext = function () {
 
-            return context;
-        };
+			return context;
+		};
 
-        this.getWidth = function () {
+		this.getWidth = function () {
 
-            return width;
-        };
+			return width;
+		};
 
-        this.getHeight = function () {
+		this.getHeight = function () {
 
-            return height;
-        };
+			return height;
+		};
 
-        this.clear = function () {
+		this.clear = function () {
 
-            this.resetTransform();
-            context.clearRect(0, 0, width, height);
-            return this;
-        };
+			this.resetTransform();
+			context.clearRect(0, 0, width, height);
+			return this;
+		};
 
-        this.resetTransform = function () {
+		this.resetTransform = function () {
 
-            context.setTransform(1, 0, 0, 1, 0, 0);
-            return this;
-        };
+			context.setTransform(1, 0, 0, 1, 0, 0);
+			return this;
+		};
 
-        this.translate = function (x, y) {
+		this.translate = function (x, y) {
 
-            context.translate(x, y);
-            return this;
-        };
+			context.translate(x, y);
+			return this;
+		};
 
-        this.rotate = function (alpha) {
+		this.rotate = function (alpha) {
 
-            context.rotate(Math.PI * alpha / 180);
-            return this;
-        };
+			context.rotate(Math.PI * alpha / 180);
+			return this;
+		};
 
-        this.opacity = function (opacity) {
+		this.opacity = function (opacity) {
 
-            context.globalAlpha = opacity;
-            return this;
-        };
+			context.globalAlpha = opacity;
+			return this;
+		};
 
-        this.path = function () {
+		this.path = function () {
 
-            return new Path(this);
-        };
-    };
+			return new Path(this);
+		};
+	};
 
 }());
