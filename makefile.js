@@ -109,7 +109,7 @@ module.exports = function (make) {
 		});
 
 
-	make.target('build', ['git-hash'], 'build all updated files')
+	make.target('build', ['clean', 'git-hash'], 'build all updated files')
 		.sync(function () {
 
 			var scriptName = pkg.name;
