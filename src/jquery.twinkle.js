@@ -1,9 +1,13 @@
-/*! jQuery.twinkle %BUILD_VERSION% - //larsjung.de/twinkle - MIT License */
+/*!
+{{pkg.displayName}} {{pkg.version}}
+http://larsjung.de/twinkle
+MIT License
+*/
 
 (function ($) {
 	'use strict';
 
-	// @include "inc/lib/modplug-0.7.js"
+	// @include "lib/modplug-1.0.js"
 
 	var defaults = {
 			widthRatio: 0.5,
@@ -204,4 +208,3 @@
 
 // @include "inc/css-effects.js"
 // @include "inc/canvas-effects.js"
-

@@ -1,9 +1,9 @@
 # jQuery.twinkle
 
-* Website with download, docs and demo: <http://larsjung.de/twinkle>
-* Sources: <http://github.com/lrsjng/jQuery.twinkle>
+* website with download, docs and demo: <http://larsjung.de/twinkle>
+* github: <http://github.com/lrsjng/jQuery.twinkle>
 
-jQuery.twinkle is provided under the terms of the [MIT License](http://github.com/lrsjng/jQuery.twinkle/blob/master/LICENSE.txt).  
+jQuery.twinkle is provided under the terms of the [MIT License](http://github.com/lrsjng/jQuery.twinkle/blob/develop/LICENSE.md).
 
 
 ## Changelog
@@ -11,13 +11,13 @@ jQuery.twinkle is provided under the terms of the [MIT License](http://github.co
 
 ### v0.5 · *2012-05-??*
 
-* refactored
-* updated ModPlug to version 0.7
+* refactors code
+* updates modplug to v1.0
 
 
 ### v0.4 · *2011-09-22*
 
-* fixed problem with closed tags like `&lt;input /&gt;`, now all elements should be twinkable
+* fixed problem with closed tags like `<input />`, now all elements should be twinkable
 * removed `release` folder
 
 
@@ -35,4 +35,3 @@ jQuery.twinkle is provided under the terms of the [MIT License](http://github.co
 
 
 ### v0.1 · *2011-08-08*
-
