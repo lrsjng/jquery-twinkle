@@ -1,10 +1,9 @@
-/*
- * jQuery.twinkle %BUILD_VERSION%
- * CSS Effects
- * http://larsjung.de/twinkle
- *
- * provided under the terms of the MIT License
- */
+/*!
+{{pkg.displayName}} {{pkg.version}}
+CSS Effects
+http://larsjung.de/twinkle
+MIT License
+*/
 
 (function ($) {
 	'use strict';
@@ -151,4 +150,3 @@
 	$.twinkle.add(new SplashEffect()).add(new DropEffect()).add(new DropsEffect());
 
 }(jQuery));
-

@@ -1,10 +1,9 @@
-/*
- * jQuery.twinkle %BUILD_VERSION%
- * Canvas Effects
- * http://larsjung.de/twinkle
- *
- * provided under the terms of the MIT License
- */
+/*!
+{{pkg.displayName}} {{pkg.version}}
+Canvas Effects
+http://larsjung.de/twinkle
+MIT License
+*/
 
 (function ($) {
 	'use strict';
