@@ -1,7 +1,7 @@
 /*!
 {{pkg.displayName}} {{pkg.version}}
 Canvas Effects
-http://larsjung.de/twinkle
+{{pkg.url}}
 MIT License
 */
 

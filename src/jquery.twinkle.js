@@ -1,6 +1,6 @@
 /*!
 {{pkg.displayName}} {{pkg.version}}
-http://larsjung.de/twinkle
+{{pkg.url}}
 MIT License
 */
 

@@ -1,7 +1,7 @@
 /*!
 {{pkg.displayName}} {{pkg.version}}
 CSS Effects
-http://larsjung.de/twinkle
+{{pkg.url}}
 MIT License
 */
 
