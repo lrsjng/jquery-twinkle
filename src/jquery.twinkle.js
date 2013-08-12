@@ -1,147 +1,210 @@
-/*
- * jQuery.twinkle %BUILD_VERSION%
- * http://larsjung.de/twinkle
- *
- * provided under the terms of the MIT License
- */
+/*!
+{{pkg.displayName}} {{pkg.version}}
+{{pkg.url}}
+MIT License
+*/
 
-// @include "inc/modplug-0.4.js"
+(function ($) {
+	'use strict';
 
+	// @include "lib/modplug-1.0.js"
 
-(function ($, undefined) {
-    "use strict";
+	var defaults = {
+			widthRatio: 0.5,
+			heightRatio: 0.5,
+			delay: 0,
+			gap: 0,
+			effect: 'splash',
+			effectOptions: undefined,
+			callback: undefined
+		},
+		stopDefaults = {
+			id: undefined,
+			effectOptions: undefined,
+			callback: undefined
+		},
+		TwinkleEvent = function (offX, offY, element, posX, posY) {
 
-    var defaults = {
-            widthRatio: 0.5,
-            heightRatio: 0.5,
-            delay: 0,
-            gap: 0,
-            effect: "splash",
-            effectOptions: undefined,
-            callback: undefined
-        },
-        Event = function (offX, offY, element, posX, posY) {
+			this.offset = {left: offX, top: offY};
+			this.element = element;
+			this.position = {left: posX, top: posY};
+		},
+		StopEvent = function (element) {
 
-            this.offset = {left: offX, top: offY};
-            this.element = element;
-            this.position = {left: posX, top: posY};
-        },
-        Twinkler = function () {
+			this.element = element;
+		},
+		Twinkler = function () {
 
-            var effects = {};
+			var effects = {},
+				running = {}, // element => {id: handle}
+				effectStarted = function (element, id, handle) {
 
-            this.add = function (effect) {
+				},
+				effectStopped = function (element, id) {
 
-                if (!effects[effect.id]) {
-                    effects[effect.id] = effect;
-                }
-                return this;
-            };
+				};
 
-            this.remove = function (effect) {
+			this.add = function (effect) {
 
-                if (effects[effect]) {
-                    delete effects[effect];
-                } else if (effect.id && effects[effect.id]) {
-                    delete effects[effect.id];
-                }
-                return this;
-            };
+				if (!effects[effect.id]) {
+					effects[effect.id] = effect;
+				}
+				return this;
+			};
 
-            this.twinkle = function (event, options) {
+			this.remove = function (effect) {
 
-                var settings = $.extend({}, defaults, options),
-                    effect = effects[settings.effect];
+				if (effects[effect]) {
+					delete effects[effect];
+				} else if (effect.id && effects[effect.id]) {
+					delete effects[effect.id];
+				}
+				return this;
+			};
 
-                if (effect) {
-                    event.element = event.element || "body";
-                    effect.run(event, settings.effectOptions, settings.callback);
-                }
-                return this;
-            };
+			this.twinkle = function (event, options) {
 
-            this.twinkleAtElement = function (htmlElement, options) {
+				var settings = $.extend({}, defaults, options),
+					effect = effects[settings.effect];
 
-                var settings = $.extend({}, defaults, options),
-                    $htmlElement = $(htmlElement),
-                    offset = $htmlElement.offset(),
-                    position = $htmlElement.position(),
-                    width = $htmlElement.outerWidth(true),
-                    height = $htmlElement.outerHeight(true),
-                    offX = offset.left + width * settings.widthRatio,
-                    offY = offset.top + height * settings.heightRatio,
-                    posX = position.left + width * settings.widthRatio,
-                    posY = position.top + height * settings.heightRatio;
+				if (effect) {
+					event.element = event.element || 'body';
+					effect.run(event, settings.effectOptions, function () {
+						settings.callback();
+					});
+				}
+				return this;
+			};
 
-                return this.twinkle(new Event(offX, offY, htmlElement, posX, posY), options);
-            };
+			this.stop = function (event, options) {
 
-            this.twinkleAtElements = function (htmlElements, options) {
+				var settings = $.extend({}, stopDefaults, options),
+					effect = effects[settings.effect];
 
-                var self = this,
-                    settings = $.extend({}, defaults, options),
-                    delay = settings.delay,
-                    $htmlElements = $(htmlElements),
-                    size = $htmlElements.size();
+				if (effect) {
+					event.element = event.element || 'body';
+					effect.stop(event, settings.effectOptions, settings.callback);
+				}
+				return this;
+			};
 
-                $htmlElements.each(function (idx) {
+			this.twinkleAtElement = function (htmlElement, options) {
 
-                    var htmlElement = this,
-                        opts = $.extend({}, options);
+				var settings = $.extend({}, defaults, options),
+					$htmlElement = $(htmlElement),
+					offset = $htmlElement.offset(),
+					position = $htmlElement.position(),
+					width = $htmlElement.outerWidth(true),
+					height = $htmlElement.outerHeight(true),
+					offX = offset.left + width * settings.widthRatio,
+					offY = offset.top + height * settings.heightRatio,
+					posX = position.left + width * settings.widthRatio,
+					posY = position.top + height * settings.heightRatio;
 
-                    if (idx !== size - 1) {
-                        delete opts.callback;
-                    }
+				return this.twinkle(new TwinkleEvent(offX, offY, htmlElement, posX, posY), options);
+			};
 
-                    setTimeout(function () {
-                        self.twinkleAtElement(htmlElement, opts);
-                    }, delay);
+			this.twinkleAtElements = function (htmlElements, options) {
 
-                    delay += settings.gap;
-                });
-                return this;
-            };
-        },
-        twinkler = new Twinkler(),
-        plugin = {
-            statics: {
-                twinkle: function (element, left, top, options) {
+				var self = this,
+					settings = $.extend({}, defaults, options),
+					delay = settings.delay,
+					$htmlElements = $(htmlElements),
+					size = $htmlElements.size();
 
-                    twinkler.twinkle(new Event(0, 0, element, left, top), options);
-                    return this;
-                },
-                add: function (effect) {
+				$htmlElements.each(function (idx) {
 
-                    twinkler.add(effect);
-                    return this;
-                },
-                remove: function (effect) {
+					var htmlElement = this,
+						opts = $.extend({}, options);
 
-                    twinkler.remove(effect);
-                    return this;
-                }
-            },
-            methods: {
-                twinkle: function (options) {
+					if (idx !== size - 1) {
+						delete opts.callback;
+					}
 
-                    twinkler.twinkleAtElements(this, options);
-                    return this;
-                }
-            },
-            defaultStatic: function () {
+					setTimeout(function () {
+						self.twinkleAtElement(htmlElement, opts);
+					}, delay);
 
-                return "twinkle";
-            },
-            defaultMethod: function () {
+					delay += settings.gap;
+				});
+				return this;
+			};
 
-                return "twinkle";
-            }
-        };
+			this.stopAtElement = function (htmlElement, options) {
 
-    $.ModPlug.plugin("twinkle", plugin);
+				var settings = $.extend({}, defaults, options),
+					$htmlElement = $(htmlElement),
+					offset = $htmlElement.offset(),
+					position = $htmlElement.position(),
+					width = $htmlElement.outerWidth(true),
+					height = $htmlElement.outerHeight(true),
+					offX = offset.left + width * settings.widthRatio,
+					offY = offset.top + height * settings.heightRatio,
+					posX = position.left + width * settings.widthRatio,
+					posY = position.top + height * settings.heightRatio;
+
+				return this.twinkle(new TwinkleEvent(offX, offY, htmlElement, posX, posY), options);
+			};
+
+			this.stopAtElements = function (htmlElements, options) {
+
+				var self = this,
+					settings = $.extend({}, stopDefaults, options),
+					delay = settings.delay,
+					$htmlElements = $(htmlElements),
+					size = $htmlElements.size();
+
+				$htmlElements.each(function (idx) {
+
+					var htmlElement = this,
+						opts = $.extend({}, options);
+
+					if (idx !== size - 1) {
+						delete opts.callback;
+					}
+
+					self.stopAtElement(htmlElement, opts);
+				});
+				return this;
+			};
+		},
+		twinkler = new Twinkler();
+
+	modplug('twinkle', {
+		statics: {
+			twinkle: function (element, left, top, options) {
+
+				twinkler.twinkle(new TwinkleEvent(0, 0, element, left, top), options);
+				return this;
+			},
+			add: function (effect) {
+
+				twinkler.add(effect);
+				return this;
+			},
+			remove: function (effect) {
+
+				twinkler.remove(effect);
+				return this;
+			}
+		},
+		methods: {
+			twinkle: function (options) {
+
+				twinkler.twinkleAtElements(this, options);
+				return this;
+			},
+			stop: function (options) {
+
+				twinkler.stopAtElements(this, options);
+				return this;
+			}
+		},
+		defaultStatic: 'twinkle',
+		defaultMethod: 'twinkle'
+	});
 
 }(jQuery));
 
 // @include "inc/css-effects.js"
 // @include "inc/canvas-effects.js"
-
