@@ -71,7 +71,7 @@ module.exports = function (make) {
 				undef: true,
 
 				// Environments
-				browser: true,
+				browser: true
 			},
 			global = {
 				'jQuery': true,
@@ -92,7 +92,7 @@ module.exports = function (make) {
 			.handlebars(make.env)
 			.WRITE($.map.p(src, build).s('.js', '-' + pkg.version + '.js'))
 			.uglifyjs()
-			.WRITE($.map.p(src, build).s('.js', '-' + pkg.version + '.min.js'))
+			.WRITE($.map.p(src, build).s('.js', '-' + pkg.version + '.min.js'));
 
 		$(src + ': demo/**')
 			.handlebars(make.env)
