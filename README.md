@@ -12,7 +12,7 @@ jQuery.twinkle is provided under the terms of the [MIT License](https://github.c
 ### develop branch
 
 * refactors code
-* updates modplug to v1.0
+* updates `modplug` to `1.0`
 * adds demo
 * changes build process
 
