@@ -1,18 +1,20 @@
 # jQuery.twinkle
 
-* website with download, docs and demo: <http://larsjung.de/twinkle>
-* github: <http://github.com/lrsjng/jQuery.twinkle>
+* website with download, docs and demo: <http://larsjung.de/twinkle/>
+* github: <https://github.com/lrsjng/jQuery.twinkle>
 
-jQuery.twinkle is provided under the terms of the [MIT License](http://github.com/lrsjng/jQuery.twinkle/blob/develop/LICENSE.md).
+jQuery.twinkle is provided under the terms of the [MIT License](https://github.com/lrsjng/jQuery.twinkle/blob/develop/LICENSE.md).
 
 
 ## Changelog
 
 
-### v0.5 · *2012-05-??*
+### develop branch
 
 * refactors code
 * updates modplug to v1.0
+* adds demo
+* changes build process
 
 
 ### v0.4 · *2011-09-22*
