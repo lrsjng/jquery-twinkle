@@ -16,12 +16,12 @@ MIT License
 			gap: 0,
 			effect: 'splash',
 			effectOptions: undefined,
-			callback: undefined
+			callback: function(){}
 		},
 		stopDefaults = {
 			id: undefined,
 			effectOptions: undefined,
-			callback: undefined
+			callback: function(){}
 		},
 		TwinkleEvent = function (offX, offY, element, posX, posY) {
 
