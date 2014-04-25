@@ -70,7 +70,9 @@ MIT License
 				if (effect) {
 					event.element = event.element || 'body';
 					effect.run(event, settings.effectOptions, function () {
-						settings.callback();
+						if (typeof settings.callback === 'function') {
+							settings.callback();
+						}
 					});
 				}
 				return this;
