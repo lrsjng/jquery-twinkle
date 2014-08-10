@@ -1,8 +1,4 @@
-/*!
-{{pkg.displayName}} {{pkg.version}}
-{{pkg.url}}
-MIT License
-*/
+/*! jQuery.fracs {{pkg.version}} - //larsjung.de/twinkle - MIT License */
 
 (function ($) {
 	'use strict';
