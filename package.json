@@ -1,13 +1,14 @@
 {
-  "name": "jquery.twinkle",
+  "name": "jquery-twinkle",
   "displayName": "jQuery.twinkle",
-  "version": "0.5.0+",
+  "version": "0.6.0",
   "description": "get the visitor's attention",
-  "url": "http://larsjung.de/twinkle/",
-  "author": "Lars Jung",
+  "homepage": "http://larsjung.de/twinkle/",
+  "bugs": "https://github.com/lrsjng/jquery-twinkle/issues",
+  "author": "Lars Jung <lrsjng@gmail.com> (http://larsjung.de)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lrsjng/jQuery.twinkle.git"
+    "url": "https://github.com/lrsjng/jquery-twinkle.git"
   }
 }

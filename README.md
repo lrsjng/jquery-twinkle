@@ -1,44 +1,40 @@
 # jQuery.twinkle
 
-* website with download, docs and demo: <http://larsjung.de/twinkle/>
-* github: <https://github.com/lrsjng/jQuery.twinkle>
+[![web][web-img]][web] [![GitHub][github-img]][github] [![bower][bower-img]][bower]
 
-jQuery.twinkle is provided under the terms of the [MIT License](https://github.com/lrsjng/jQuery.twinkle/blob/develop/LICENSE.md).
-
-
-## Changelog
+jQuery plugin to get the user's attention.
+For bug reports and feature requests please use [issues][github-issues].
 
 
-### develop branch
+## License
+The MIT License (MIT)
 
-* ...
+Copyright (c) 2014 Lars Jung (http://larsjung.de)
 
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-### v0.5.0 - *2013-08-12*
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
-* refactors code
-* updates `modplug` to `1.0`
-* adds demo
-* changes build process
-
-
-### v0.4 - *2011-09-22*
-
-* fixed problem with closed tags like `<input />`, now all elements should be twinkable
-* removed `release` folder
-
-
-### v0.3 - *2011-09-18*
-
-* refactored
-* added callback support after effect completed
-* effects can be removed by ID
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 
 
-### v0.2 - *2011-08-12*
+[web]: http://larsjung.de/twinkle/
+[github]: https://github.com/lrsjng/jquery-twinkle
+[bower]: http://bower.io/search/?q=jquery-twinkle
+[github-issues]: https://github.com/lrsjng/jquery-twinkle/issues
 
-* changed names of built in effect from realase 0.1 (suffixed with `-css`)
-* added new effects based on HTML canvas
-
-
-### v0.1 - *2011-08-08*
+[web-img]: http://img.shields.io/badge/web-larsjung.de/twinkle-a0a060.svg?style=flat
+[github-img]: http://img.shields.io/badge/GitHub-lrsjng/jquery--twinkle-a0a060.svg?style=flat
+[bower-img]: http://img.shields.io/badge/bower-jquery--twinkle-a0a060.svg?style=flat
