@@ -1,5 +1,4 @@
-/*! jQuery.fracs 0.6.0 - //larsjung.de/twinkle - MIT License */
-
+/* jQuery.twinkle 0.7.0 - http://larsjung.de/jquery-twinkle/ */
 (function ($) {
 	'use strict';
 
@@ -299,7 +298,7 @@
 }(jQuery));
 
 /*!
-jQuery.twinkle 0.6.0
+jQuery.twinkle 0.7.0
 CSS Effects
 
 MIT License
@@ -452,7 +451,7 @@ MIT License
 }(jQuery));
 
 /*!
-jQuery.twinkle 0.6.0
+jQuery.twinkle 0.7.0
 Canvas Effects
 
 MIT License

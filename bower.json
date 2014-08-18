@@ -1,17 +1,13 @@
 {
   "name": "jquery-twinkle",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "get the visitor's attention",
-  "homepage": "http://larsjung.de/twinkle/",
+  "homepage": "http://larsjung.de/jquery-twinkle/",
   "authors": [
     "Lars Jung <lrsjng@gmail.com> (http://larsjung.de)"
   ],
   "license": "MIT",
   "main": "dist/jquery.twinkle.js",
-  "keywords": [
-    "jquery",
-    "javascript"
-  ],
   "ignore": [
     "**/.*",
     "bower_components",

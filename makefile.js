@@ -17,7 +17,7 @@ module.exports = function (make) {
 		$ = make.fQuery;
 
 
-	make.version('>=0.10.0');
+	make.version('=0.11.0');
 	make.defaults('release');
 
 
@@ -60,16 +60,17 @@ module.exports = function (make) {
 
 	make.target('build', ['clean', 'lint'], 'build all updated files').sync(function () {
 
-		var env = {
-				pkg: pkg
-			};
+		var header = '/* ' + pkg.displayName + ' ' + pkg.version + ' - ' + pkg.homepage + ' */\n';
+		var env = {pkg: pkg};
 
 		$(src + ': *.js')
 			.includify()
 			.handlebars(env)
+			.wrap(header)
 			.WRITE($.map.p(src, dist))
 			.WRITE($.map.p(src, build).s('.js', '-' + pkg.version + '.js'))
 			.uglifyjs()
+			.wrap(header)
 			.WRITE($.map.p(src, dist).s('.js', '.min.js'))
 			.WRITE($.map.p(src, build).s('.js', '-' + pkg.version + '.min.js'));
 

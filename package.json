@@ -1,9 +1,9 @@
 {
   "name": "jquery-twinkle",
   "displayName": "jQuery.twinkle",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "get the visitor's attention",
-  "homepage": "http://larsjung.de/twinkle/",
+  "homepage": "http://larsjung.de/jquery-twinkle/",
   "bugs": "https://github.com/lrsjng/jquery-twinkle/issues",
   "author": "Lars Jung <lrsjng@gmail.com> (http://larsjung.de)",
   "license": "MIT",

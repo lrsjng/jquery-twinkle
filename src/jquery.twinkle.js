@@ -1,5 +1,3 @@
-/*! jQuery.fracs {{pkg.version}} - //larsjung.de/twinkle - MIT License */
-
 (function ($) {
 	'use strict';
 

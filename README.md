@@ -3,7 +3,6 @@
 [![web][web-img]][web] [![GitHub][github-img]][github] [![bower][bower-img]][bower]
 
 jQuery plugin to get the user's attention.
-For bug reports and feature requests please use [issues][github-issues].
 
 
 ## License
@@ -33,7 +32,6 @@ THE SOFTWARE.
 [web]: http://larsjung.de/twinkle/
 [github]: https://github.com/lrsjng/jquery-twinkle
 [bower]: http://bower.io/search/?q=jquery-twinkle
-[github-issues]: https://github.com/lrsjng/jquery-twinkle/issues
 
 [web-img]: http://img.shields.io/badge/web-larsjung.de/twinkle-a0a060.svg?style=flat
 [github-img]: http://img.shields.io/badge/GitHub-lrsjng/jquery--twinkle-a0a060.svg?style=flat
