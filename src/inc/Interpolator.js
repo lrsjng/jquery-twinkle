@@ -1,57 +1,67 @@
+(function () {
 
-Objects.Interpolator = function (values) {
+function Interpolator(values) {
 
-	var points,
-		equiDist = function (values) {
+    var points;
 
-			var dist = 1 / (values.length - 1),
-				points = [],
-				i;
+    function equiDist(values) {
 
-			for (i = 0; i < values.length; i += 1) {
-				points.push({ x: dist * i , y: values[i] });
-			}
-			return points;
-		},
-		interpolate = function (p1, p2, x) {
+        var dist = 1 / (values.length - 1);
+        var points = [];
+        var i;
 
-			var m = (p2.y - p1.y) / (p2.x - p1.x),
-				y = p1.y + m * (x - p1.x);
+        for (i = 0; i < values.length; i += 1) {
+            points.push({ x: dist * i , y: values[i] });
+        }
+        return points;
+    }
 
-			return y;
-		},
-		findSection = function (x) {
+    function interpolate(p1, p2, x) {
 
-			var i, prev, current;
+        var m = (p2.y - p1.y) / (p2.x - p1.x);
+        var y = p1.y + m * (x - p1.x);
 
-			for (i = 1; i < points.length; i += 1) {
+        return y;
+    }
 
-				prev = points[i-1];
-				current = points[i];
-				if (x >= prev.x && x <= current.x) {
-					return [ prev, current ];
-				}
-			}
-			return undefined;
-		};
+    function findSection(x) {
 
-	points = equiDist(values);
+        var i, prev, current;
 
-	this.get = function (x) {
+        for (i = 1; i < points.length; i += 1) {
+            prev = points[i-1];
+            current = points[i];
+            if (x >= prev.x && x <= current.x) {
+                return [ prev, current ];
+            }
+        }
 
-		var secPts;
+        return undefined;
+    }
 
-		x = Math.max(0, Math.min(1, x));
-		secPts = findSection(x);
-		return interpolate(secPts[0], secPts[1], x);
-	};
+    points = equiDist(values);
 
-};
+    this.get = function (x) {
 
-Objects.Interpolator.scale = function (x, scale, offset) {
+        var secPts;
 
-	scale = scale || 1;
-	offset = offset || 0;
-	x = (x - offset) / scale;
-	return x >= 0 && x <= 1 ? x : undefined;
-};
+        x = Math.max(0, Math.min(1, x));
+        secPts = findSection(x);
+        return interpolate(secPts[0], secPts[1], x);
+    };
+}
+
+
+function scaleit(x, scale, offset) {
+
+    scale = scale || 1;
+    offset = offset || 0;
+    x = (x - offset) / scale;
+    return x >= 0 && x <= 1 ? x : undefined;
+}
+
+
+Objects.Interpolator = Interpolator;
+Objects.Interpolator.scale =  scaleit;
+
+}());

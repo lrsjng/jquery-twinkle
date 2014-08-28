@@ -1,53 +1,56 @@
-
 (function () {
 
-	var defaults = {
-			color: 'rgba(255,0,0,0.5)',
-			radius: 300,
-			duration: 1000,
-			width: 2,
-			count: 3,
-			delay: 100
-		},
-		DropsEffect = function () {
+var $ = jQuery;
 
-			this.id = 'drops';
+var defaults = {
+        color: 'rgba(255,0,0,0.5)',
+        radius: 300,
+        duration: 1000,
+        width: 2,
+        count: 3,
+        delay: 100
+    };
 
-			this.run = function (twinkleEvent, options, callback) {
+function DropsEffect() {
 
-				var settings = $.extend({}, defaults, options),
-					size = settings.radius * 2,
-					opacityIpl = new Objects.Interpolator([ 0.4, 1, 0 ]),
-					radiusIpl = new Objects.Interpolator([ 0, settings.radius ]),
-					scale = (settings.duration - (settings.count - 1) * settings.delay) / settings.duration,
-					offset = settings.delay / settings.duration,
-					frame = function (frameEvent) {
+    this.id = 'drops';
 
-						var i, frac, radius, opacity,
-							ctx = frameEvent.ctx,
-							width = ctx.getWidth(),
-							height = ctx.getHeight();
+    this.run = function (twinkleEvent, options, callback) {
 
-						ctx.clear();
-						for (i = 0; i < settings.count; i += 1) {
-							frac = Objects.Interpolator.scale(frameEvent.frac, scale, offset * i);
+        var settings = $.extend({}, defaults, options);
+        var size = settings.radius * 2;
+        var opacityIpl = new Objects.Interpolator([ 0.4, 1, 0 ]);
+        var radiusIpl = new Objects.Interpolator([ 0, settings.radius ]);
+        var scale = (settings.duration - (settings.count - 1) * settings.delay) / settings.duration;
+        var offset = settings.delay / settings.duration;
 
-							if (frac !== undefined) {
-								radius = radiusIpl.get(frac);
-								opacity = opacityIpl.get(frac);
-								ctx
-									.opacity(opacity)
-									.path()
-									.circle(width * 0.5, height * 0.5, radius)
-									.stroke(settings.width, settings.color);
-							}
-						}
-					};
+        function frame(frameEvent) {
 
-				new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
-			};
-		};
+            var i, frac, radius, opacity;
+            var ctx = frameEvent.ctx;
+            var width = ctx.getWidth();
+            var height = ctx.getHeight();
 
-	$.twinkle.add(new DropsEffect());
+            ctx.clear();
+            for (i = 0; i < settings.count; i += 1) {
+                frac = Objects.Interpolator.scale(frameEvent.frac, scale, offset * i);
+
+                if (frac !== undefined) {
+                    radius = radiusIpl.get(frac);
+                    opacity = opacityIpl.get(frac);
+                    ctx
+                        .opacity(opacity)
+                        .path()
+                        .circle(width * 0.5, height * 0.5, radius)
+                        .stroke(settings.width, settings.color);
+                }
+            }
+        }
+
+        new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
+    };
+}
+
+$.twinkle.add(new DropsEffect());
 
 }());

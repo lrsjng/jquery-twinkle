@@ -1,39 +1,42 @@
-
 (function () {
 
-	var defaults = {
-			color: 'rgba(255,0,0,0.5)',
-			radius: 100,
-			duration: 3000
-		},
-		PulseEffect = function () {
+var $ = jQuery;
 
-			this.id = 'pulse';
+var defaults = {
+        color: 'rgba(255,0,0,0.5)',
+        radius: 100,
+        duration: 3000
+    };
 
-			this.run = function (twinkleEvent, options, callback) {
+function PulseEffect() {
 
-				var settings = $.extend({}, defaults, options),
-					size = settings.radius * 2,
-					opacityIpl = new Objects.Interpolator([ 0, 1, 0.6, 1, 0.6, 1, 0 ]),
-					radiusIpl = new Objects.Interpolator([ 0, settings.radius, settings.radius * 0.6, settings.radius, settings.radius * 0.6, settings.radius, 0 ]),
-					frame = function (frameEvent) {
+    this.id = 'pulse';
 
-						var radius = radiusIpl.get(frameEvent.frac),
-							opacity = opacityIpl.get(frameEvent.frac),
-							ctx = frameEvent.ctx;
+    this.run = function (twinkleEvent, options, callback) {
 
-						ctx
-							.clear()
-							.opacity(opacity)
-							.path()
-							.circle(ctx.getWidth() * 0.5, ctx.getHeight() * 0.5, radius)
-							.fill(settings.color);
-					};
+        var settings = $.extend({}, defaults, options);
+        var size = settings.radius * 2;
+        var opacityIpl = new Objects.Interpolator([ 0, 1, 0.6, 1, 0.6, 1, 0 ]);
+        var radiusIpl = new Objects.Interpolator([ 0, settings.radius, settings.radius * 0.6, settings.radius, settings.radius * 0.6, settings.radius, 0 ]);
 
-				new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
-			};
-		};
+        function frame(frameEvent) {
 
-	$.twinkle.add(new PulseEffect());
+            var radius = radiusIpl.get(frameEvent.frac),
+                opacity = opacityIpl.get(frameEvent.frac),
+                ctx = frameEvent.ctx;
+
+            ctx
+                .clear()
+                .opacity(opacity)
+                .path()
+                .circle(ctx.getWidth() * 0.5, ctx.getHeight() * 0.5, radius)
+                .fill(settings.color);
+        }
+
+        new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
+    };
+}
+
+$.twinkle.add(new PulseEffect());
 
 }());

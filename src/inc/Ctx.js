@@ -1,103 +1,108 @@
-
 (function () {
 
-	var Path = function (ctx) {
-
-		var context = ctx.getContext();
-
-		context.beginPath();
-
-		this.fill = function (fillStyle) {
-
-			context.fillStyle = fillStyle;
-			context.fill();
-			return ctx;
-		};
-
-		this.stroke = function (lineWidth, strokeStyle) {
-
-			context.lineWidth = lineWidth;
-			context.strokeStyle = strokeStyle;
-			context.stroke();
-			return ctx;
-		};
-
-		this.draw = function (lineWidth, strokeStyle, fillStyle) {
-
-			this.fill(fillStyle);
-			this.stroke(lineWidth, strokeStyle);
-			return ctx;
-		};
-
-		this.circle = function (x, y, radius) {
-
-			context.arc(x, y, radius, 0, 2 * Math.PI, false);
-			return this;
-		};
-	};
+var $ = jQuery;
 
 
-	Objects.Ctx = function (context) {
+function Path(ctx) {
 
-		if (!context || !context.canvas) {
-			return undefined;
-		} else if (!(this instanceof Objects.Ctx)) {
-			return new Objects.Ctx(context);
-		}
+    var context = ctx.getContext();
 
-		var width = $(context.canvas).width(),
-			height = $(context.canvas).height();
+    context.beginPath();
 
-		this.getContext = function () {
+    this.fill = function (fillStyle) {
 
-			return context;
-		};
+        context.fillStyle = fillStyle;
+        context.fill();
+        return ctx;
+    };
 
-		this.getWidth = function () {
+    this.stroke = function (lineWidth, strokeStyle) {
 
-			return width;
-		};
+        context.lineWidth = lineWidth;
+        context.strokeStyle = strokeStyle;
+        context.stroke();
+        return ctx;
+    };
 
-		this.getHeight = function () {
+    this.draw = function (lineWidth, strokeStyle, fillStyle) {
 
-			return height;
-		};
+        this.fill(fillStyle);
+        this.stroke(lineWidth, strokeStyle);
+        return ctx;
+    };
 
-		this.clear = function () {
+    this.circle = function (x, y, radius) {
 
-			this.resetTransform();
-			context.clearRect(0, 0, width, height);
-			return this;
-		};
+        context.arc(x, y, radius, 0, 2 * Math.PI, false);
+        return this;
+    };
+}
 
-		this.resetTransform = function () {
 
-			context.setTransform(1, 0, 0, 1, 0, 0);
-			return this;
-		};
+function Ctx(context) {
 
-		this.translate = function (x, y) {
+    if (!context || !context.canvas) {
+        return undefined;
+    } else if (!(this instanceof Ctx)) {
+        return new Ctx(context);
+    }
 
-			context.translate(x, y);
-			return this;
-		};
+    var width = $(context.canvas).width();
+    var height = $(context.canvas).height();
 
-		this.rotate = function (alpha) {
+    this.getContext = function () {
 
-			context.rotate(Math.PI * alpha / 180);
-			return this;
-		};
+        return context;
+    };
 
-		this.opacity = function (opacity) {
+    this.getWidth = function () {
 
-			context.globalAlpha = opacity;
-			return this;
-		};
+        return width;
+    };
 
-		this.path = function () {
+    this.getHeight = function () {
 
-			return new Path(this);
-		};
-	};
+        return height;
+    };
+
+    this.clear = function () {
+
+        this.resetTransform();
+        context.clearRect(0, 0, width, height);
+        return this;
+    };
+
+    this.resetTransform = function () {
+
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        return this;
+    };
+
+    this.translate = function (x, y) {
+
+        context.translate(x, y);
+        return this;
+    };
+
+    this.rotate = function (alpha) {
+
+        context.rotate(Math.PI * alpha / 180);
+        return this;
+    };
+
+    this.opacity = function (opacity) {
+
+        context.globalAlpha = opacity;
+        return this;
+    };
+
+    this.path = function () {
+
+        return new Path(this);
+    };
+}
+
+
+Objects.Ctx = Ctx;
 
 }());

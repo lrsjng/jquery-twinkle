@@ -1,6 +1,6 @@
 # jQuery.twinkle
 
-[![web][web-img]][web] [![GitHub][github-img]][github] [![bower][bower-img]][github]
+[![license][license-img]][github] [![web][web-img]][web] [![github][github-img]][github] [![bower][bower-img]][github]
 
 jQuery plugin to get the user's attention.
 
@@ -29,9 +29,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
-[web]: http://larsjung.de/twinkle/
+[web]: http://larsjung.de/jquery-twinkle/
 [github]: https://github.com/lrsjng/jquery-twinkle
 
-[web-img]: http://img.shields.io/badge/web-larsjung.de/twinkle-a0a060.svg?style=flat
-[github-img]: http://img.shields.io/badge/GitHub-lrsjng/jquery--twinkle-a0a060.svg?style=flat
-[bower-img]: http://img.shields.io/badge/bower-jquery--twinkle-a0a060.svg?style=flat
+[license-img]: http://img.shields.io/badge/license-MIT-a0a060.svg?style=flat-square
+[web-img]: http://img.shields.io/badge/web-larsjung.de/twinkle-a0a060.svg?style=flat-square
+[github-img]: http://img.shields.io/badge/github-lrsjng/jquery--twinkle-a0a060.svg?style=flat-square
+[bower-img]: http://img.shields.io/badge/bower-lrsjng/jquery--twinkle-a0a060.svg?style=flat-square

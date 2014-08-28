@@ -1,53 +1,56 @@
-
 (function () {
 
-	var defaults = {
-			color: 'rgba(255,0,0,0.5)',
-			radius: 100,
-			duration: 3000,
-			satellites: 10,
-			satellitesRadius: 10,
-			circulations: 1.5
-		},
-		OrbitEffect = function () {
+var $ = jQuery;
 
-			this.id = 'orbit';
+var defaults = {
+        color: 'rgba(255,0,0,0.5)',
+        radius: 100,
+        duration: 3000,
+        satellites: 10,
+        satellitesRadius: 10,
+        circulations: 1.5
+    };
 
-			this.run = function (twinkleEvent, options, callback) {
+function OrbitEffect() {
 
-				var settings = $.extend({}, defaults, options),
-					size = settings.radius * 2,
-					opacityIpl = new Objects.Interpolator([ 0.4, 1, 1, 0.4 ]),
-					r = settings.radius - settings.satellitesRadius,
-					radiusIpl = new Objects.Interpolator([ 0, r, r, 0 ]),
-					frame = function (frameEvent) {
+    this.id = 'orbit';
 
-						var radius = radiusIpl.get(frameEvent.frac),
-							opacity = opacityIpl.get(frameEvent.frac),
-							bog = Math.PI * 2 * settings.circulations * frameEvent.frac,
-							ctx = frameEvent.ctx,
-							path, i, x, y;
+    this.run = function (twinkleEvent, options, callback) {
 
-						ctx
-							.clear()
-							.opacity(opacity)
-							.translate(ctx.getWidth() * 0.5, ctx.getHeight() * 0.5);
+        var settings = $.extend({}, defaults, options);
+        var size = settings.radius * 2;
+        var opacityIpl = new Objects.Interpolator([ 0.4, 1, 1, 0.4 ]);
+        var r = settings.radius - settings.satellitesRadius;
+        var radiusIpl = new Objects.Interpolator([ 0, r, r, 0 ]);
 
-						path = ctx.path();
-						for (i = 0; i < settings.satellites; i += 1) {
+        function frame(frameEvent) {
 
-							bog += Math.PI * 2 / settings.satellites;
-							x = Math.cos(bog) * radius;
-							y = Math.sin(bog) * radius;
-							path.circle(x, y, settings.satellitesRadius);
-						}
-						path.fill(settings.color);
-					};
+            var radius = radiusIpl.get(frameEvent.frac);
+            var opacity = opacityIpl.get(frameEvent.frac);
+            var bog = Math.PI * 2 * settings.circulations * frameEvent.frac;
+            var ctx = frameEvent.ctx;
+            var path, i, x, y;
 
-				new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
-			};
-		};
+            ctx
+                .clear()
+                .opacity(opacity)
+                .translate(ctx.getWidth() * 0.5, ctx.getHeight() * 0.5);
 
-	$.twinkle.add(new OrbitEffect());
+            path = ctx.path();
+            for (i = 0; i < settings.satellites; i += 1) {
+                bog += Math.PI * 2 / settings.satellites;
+                x = Math.cos(bog) * radius;
+                y = Math.sin(bog) * radius;
+                ctx.getContext().moveTo(x, y);
+                path.circle(x, y, settings.satellitesRadius);
+            }
+            path.fill(settings.color);
+        }
+
+        new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
+    };
+}
+
+$.twinkle.add(new OrbitEffect());
 
 }());

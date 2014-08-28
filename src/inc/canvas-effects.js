@@ -1,23 +1,17 @@
-/*!
-{{pkg.displayName}} {{pkg.version}}
-Canvas Effects
-{{pkg.url}}
-MIT License
-*/
+(function () {
+'use strict';
+/* Canvas Effects */
 
-(function ($) {
-	'use strict';
+var $ = jQuery;
+var Objects = {};
 
-	var Objects = {};
+// @include "Interpolator.js"
+// @include "Ctx.js"
+// @include "CanvasEffect.js"
 
-	// @include "Interpolator.js"
-	// @include "Ctx.js"
-	// @include "CanvasEffect.js"
-
-	// @include "SplashEffect.js"
-	// @include "DropEffect.js"
-	// @include "DropsEffect.js"
-	// @include "PulseEffect.js"
-	// @include "OrbitEffect.js"
-
-}(jQuery));
+// @include "SplashEffect.js"
+// @include "DropEffect.js"
+// @include "DropsEffect.js"
+// @include "PulseEffect.js"
+// @include "OrbitEffect.js"
+}());

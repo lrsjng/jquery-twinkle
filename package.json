@@ -1,7 +1,7 @@
 {
   "name": "jquery-twinkle",
   "displayName": "jQuery.twinkle",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "get the visitor's attention",
   "homepage": "http://larsjung.de/jquery-twinkle/",
   "bugs": "https://github.com/lrsjng/jquery-twinkle/issues",
@@ -10,5 +10,14 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/lrsjng/jquery-twinkle.git"
+  },
+  "devDependencies": {
+    "fquery": "~0.13.3",
+    "fquery-handlebars": "~0.1.0",
+    "fquery-includeit": "~0.2.0",
+    "fquery-jshint": "~0.2.0",
+    "fquery-jszip": "~0.1.0",
+    "fquery-uglifyjs": "~0.2.1",
+    "mkr": "~0.4.0"
   }
 }

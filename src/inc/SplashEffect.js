@@ -1,39 +1,42 @@
-
 (function () {
 
-	var defaults = {
-			color: 'rgba(255,0,0,0.5)',
-			radius: 300,
-			duration: 1000
-		},
-		SplashEffect = function () {
+var $ = jQuery;
 
-			this.id = 'splash';
+var defaults = {
+        color: 'rgba(255,0,0,0.5)',
+        radius: 300,
+        duration: 1000
+    };
 
-			this.run = function (twinkleEvent, options, callback) {
+function SplashEffect() {
 
-				var settings = $.extend({}, defaults, options),
-					size = settings.radius * 2,
-					opacityIpl = new Objects.Interpolator([ 0.4, 1, 0 ]),
-					radiusIpl = new Objects.Interpolator([ 0, settings.radius ]),
-					frame = function (frameEvent) {
+    this.id = 'splash';
 
-						var radius = radiusIpl.get(frameEvent.frac),
-							opacity = opacityIpl.get(frameEvent.frac),
-							ctx = frameEvent.ctx;
+    this.run = function (twinkleEvent, options, callback) {
 
-						ctx
-							.clear()
-							.opacity(opacity)
-							.path()
-							.circle(ctx.getWidth() * 0.5, ctx.getHeight() * 0.5, radius)
-							.fill(settings.color);
-					};
+        var settings = $.extend({}, defaults, options);
+        var size = settings.radius * 2;
+        var opacityIpl = new Objects.Interpolator([ 0.4, 1, 0 ]);
+        var radiusIpl = new Objects.Interpolator([ 0, settings.radius ]);
 
-				new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
-			};
-		};
+        function frame(frameEvent) {
 
-	$.twinkle.add(new SplashEffect());
+            var radius = radiusIpl.get(frameEvent.frac);
+            var opacity = opacityIpl.get(frameEvent.frac);
+            var ctx = frameEvent.ctx;
+
+            ctx
+                .clear()
+                .opacity(opacity)
+                .path()
+                .circle(ctx.getWidth() * 0.5, ctx.getHeight() * 0.5, radius)
+                .fill(settings.color);
+        }
+
+        new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
+    };
+}
+
+$.twinkle.add(new SplashEffect());
 
 }());
