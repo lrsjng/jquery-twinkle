@@ -112,7 +112,7 @@ function Twinkler() {
         var settings = $.extend({}, defaults, options);
         var delay = settings.delay;
         var $htmlElements = $(htmlElements);
-        var size = $htmlElements.size();
+        var size = $htmlElements.length;
 
         $htmlElements.each(function (idx) {
 
@@ -154,7 +154,7 @@ function Twinkler() {
         var settings = $.extend({}, stopDefaults, options);
         var delay = settings.delay;
         var $htmlElements = $(htmlElements);
-        var size = $htmlElements.size();
+        var size = $htmlElements.length;
 
         $htmlElements.each(function (idx) {
 
