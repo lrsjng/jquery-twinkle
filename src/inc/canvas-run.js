@@ -1,6 +1,5 @@
-(() => {
-    /* globals JQ Objects */
-
+mod('canvas-run', () => { /* globals mod */
+    const {jq, as_fn, block_evs} = mod('util');
     const FPS = 25;
 
     class Ctx {
@@ -9,8 +8,8 @@
                 return undefined;
             }
             this.ctx2d = ctx2d;
-            this.width = JQ(ctx2d.canvas).width();
-            this.height = JQ(ctx2d.canvas).height();
+            this.width = jq(ctx2d.canvas).width();
+            this.height = jq(ctx2d.canvas).height();
         }
 
         clear() {
@@ -58,7 +57,7 @@
         }
     }
 
-    const canvas_run = (tev, size, on_frame, on_end, duration) => {
+    return (tev, size, on_frame, on_end, duration) => {
         const css = {
             position: 'absolute',
             zIndex: 1000,
@@ -69,16 +68,9 @@
             height: size
         };
 
-        const block_ev = ev => {
-            ev.stopImmediatePropagation();
-            ev.preventDefault();
-            return false;
-        };
-
-        let $canvas = JQ(`<canvas width=${size} height=${size} />`)
-            .css(css)
-            .bind('click mousedown mouseenter mouseover mousemove', block_ev);
-        JQ(tev.el).after($canvas);
+        let $canvas = jq(`<canvas width=${size} height=${size} />`).css(css);
+        block_evs($canvas);
+        jq(tev.el).after($canvas);
         let ctx = new Ctx($canvas.get(0).getContext('2d'));
 
         const set_frame_timer = frac => {
@@ -93,9 +85,7 @@
             $canvas.remove();
             $canvas = undefined;
             ctx = undefined;
-            if (typeof on_end === 'function') {
-                on_end();
-            }
+            as_fn(on_end)();
         };
 
         const frame_count = duration / 1000 * FPS;
@@ -105,33 +95,4 @@
 
         setTimeout(clean_up, duration);
     };
-
-    const interpolate = vals => {
-        const pts = vals.map((y, i) => ({x: i / (vals.length - 1), y}));
-
-        const find_section = x => {
-            for (let i = 1; i < pts.length; i += 1) {
-                const prev = pts[i - 1];
-                const current = pts[i];
-                if (x >= prev.x && x <= current.x) {
-                    return [prev, current];
-                }
-            }
-            return undefined;
-        };
-
-        const linear = (p1, p2, x) => {
-            const m = (p2.y - p1.y) / (p2.x - p1.x);
-            return p1.y + m * (x - p1.x);
-        };
-
-        return x => {
-            x = x < 0 ? 0 : x > 1 ? 1 : x;
-            const section = find_section(x);
-            return linear(section[0], section[1], x);
-        };
-    };
-
-    Objects.interpolate = interpolate;
-    Objects.canvas_run = canvas_run;
-})();
+});

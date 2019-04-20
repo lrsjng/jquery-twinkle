@@ -12,211 +12,168 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 (function () {
-  var JQ = window.jQuery; // eslint-disable-line no-undef
+  var mod = function () {
+    var _defs = {};
+    var _insts = {};
+    return function (id, fn) {
+      if (fn) {
+        _defs[id] = fn;
+      } else if (!_insts.hasOwnProperty(id)) {
+        _insts[id] = _defs[id]();
+      }
 
-  var is_fn = function is_fn(x) {
-    return typeof x === 'function';
-  };
+      return _insts[id];
+    };
+  }();
 
-  var DEFAULTS = {
-    widthRatio: 0.5,
-    heightRatio: 0.5,
-    delay: 0,
-    gap: 0,
-    effect: 'splash',
-    effectOptions: undefined,
-    callback: undefined
-  };
-  var effects = {};
+  mod('canvas-effects', function () {
+    /* globals mod */
+    var _mod = mod('util'),
+        jq = _mod.jq;
 
-  var add = function add(name, fn) {
-    effects[name] = fn;
-  };
+    var interpolate = mod('interpolate');
+    var canvas_run = mod('canvas-run');
+    var DROPS_DEFAULTS = {
+      color: 'rgba(255,0,0,0.5)',
+      radius: 300,
+      duration: 1000,
+      width: 2,
+      count: 3,
+      delay: 300
+    };
 
-  var start = function start(tev, opts) {
-    var settings = _objectSpread({}, DEFAULTS, opts);
+    var trans = function trans(x, scale, offset) {
+      scale = scale || 1;
+      offset = offset || 0;
+      x = (x - offset) / scale;
+      return x >= 0 && x <= 1 ? x : undefined;
+    };
 
-    var fn = effects[settings.effect];
+    var drops = function drops(tev, opts, cb) {
+      var settings = _objectSpread({}, DROPS_DEFAULTS, opts);
 
-    if (is_fn(fn)) {
-      tev.el = tev.el || 'body';
-      fn(tev, settings.effectOptions, function () {
-        if (is_fn(settings.callback)) {
-          settings.callback();
+      var size = settings.radius * 2;
+      var alpha_ipl = interpolate([0.4, 1, 0]);
+      var radius_ipl = interpolate([0, settings.radius]);
+      var scale = (settings.duration - (settings.count - 1) * settings.delay) / settings.duration;
+      var offset = settings.delay / settings.duration;
+
+      var on_frame = function on_frame(ctx, frac) {
+        ctx.clear();
+
+        for (var i = 0; i < settings.count; i += 1) {
+          var f = trans(frac, scale, offset * i);
+
+          if (f !== undefined) {
+            ctx.opacity(alpha_ipl(f)).path().circle(ctx.width * 0.5, ctx.height * 0.5, radius_ipl(f)).stroke(settings.width, settings.color);
+          }
         }
-      });
-    }
-  };
+      };
 
-  var start_el = function start_el(el, opts) {
-    var settings = _objectSpread({}, DEFAULTS, opts);
-
-    var $el = JQ(el);
-    var pos = $el.position();
-    var width = $el.outerWidth(true);
-    var height = $el.outerHeight(true);
-    var left = pos.left + width * settings.widthRatio;
-    var top = pos.top + height * settings.heightRatio;
-    return start({
-      el: el,
-      left: left,
-      top: top
-    }, opts);
-  };
-
-  var start_els = function start_els(els, opts) {
-    var settings = _objectSpread({}, DEFAULTS, opts);
-
-    els = Array.from(els);
-    var last = els.length - 1;
-    var delay = settings.delay;
-    els.forEach(function (el, idx) {
-      var opts_i = _objectSpread({}, opts);
-
-      if (idx !== last) {
-        opts_i.callback = null;
-      }
-
-      setTimeout(function () {
-        return start_el(el, opts_i);
-      }, delay);
-      delay += settings.gap;
-    });
-  };
-
-  JQ.twinkle = add;
-
-  JQ.fn.twinkle = function main(opts) {
-    start_els(this, opts);
-    return this;
-  };
-})();
-
-(function () {
-  var JQ = window.jQuery; // eslint-disable-line no-undef
-
-  var block_ev = function block_ev(ev) {
-    ev.stopImmediatePropagation();
-    ev.preventDefault();
-    return false;
-  };
-
-  var css_run = function css_run(css, tev, settings, on_end) {
-    var $dot;
-
-    var clean_up = function clean_up() {
-      $dot.remove();
-
-      if (typeof on_end === 'function') {
-        on_end();
-      }
+      canvas_run(tev, size, on_frame, cb, settings.duration);
     };
 
-    var fade_out = function fade_out() {
-      $dot.animate({
-        left: tev.left - settings.radius,
-        top: tev.top - settings.radius,
-        width: settings.radius * 2,
-        height: settings.radius * 2,
-        opacity: 0
-      }, settings.duration * 0.5, 'linear', clean_up);
+    var drop = function drop(tev, opts, cb) {
+      drops(tev, _objectSpread({}, opts, {
+        count: 1
+      }), cb);
     };
 
-    var fade_in = function fade_in() {
-      $dot = JQ('<div />').css(css).bind('click mousedown mouseenter mouseover mousemove', block_ev);
-      JQ(tev.el).after($dot);
-      $dot.animate({
-        left: tev.left - settings.radius * 0.5,
-        top: tev.top - settings.radius * 0.5,
-        width: settings.radius,
-        height: settings.radius,
-        opacity: 1
-      }, settings.duration * 0.5, 'linear', fade_out);
+    var SPLASH_DEFAULTS = {
+      color: 'rgba(255,0,0,0.5)',
+      radius: 300,
+      duration: 1000
     };
 
-    fade_in();
-  };
+    var splash = function splash(tev, opts, cb) {
+      var settings = _objectSpread({}, SPLASH_DEFAULTS, opts);
 
-  var SPLASH_DEFAULTS = {
-    color: 'rgba(255,0,0,0.5)',
-    radius: 300,
-    duration: 1000
-  };
+      var size = settings.radius * 2;
+      var alpha_ipl = interpolate([0.4, 1, 0]);
+      var radius_ipl = interpolate([0, settings.radius]);
 
-  var splash_css = function splash_css(tev, options, cb) {
-    var settings = _objectSpread({}, SPLASH_DEFAULTS, options);
+      var on_frame = function on_frame(ctx, frac) {
+        var radius = radius_ipl(frac);
+        var opacity = alpha_ipl(frac);
+        ctx.clear().opacity(opacity).path().circle(ctx.width * 0.5, ctx.height * 0.5, radius).fill(settings.color);
+      };
 
-    var css = {
-      position: 'absolute',
-      zIndex: 1000,
-      display: 'block',
-      borderRadius: settings.radius,
-      backgroundColor: settings.color,
-      boxShadow: '0 0 30px ' + settings.color,
-      left: tev.left,
-      top: tev.top,
-      width: 0,
-      height: 0,
-      opacity: 0.4
-    };
-    css_run(css, tev, settings, cb);
-  };
-
-  var DROPS_DEFAULTS = {
-    color: 'rgba(255,0,0,0.5)',
-    radius: 300,
-    duration: 1000,
-    width: 2,
-    count: 3,
-    delay: 300
-  };
-
-  var drops_css = function drops_css(tev, options, cb) {
-    var settings = _objectSpread({}, DROPS_DEFAULTS, options);
-
-    var css = {
-      position: 'absolute',
-      zIndex: 1000,
-      display: 'block',
-      borderRadius: settings.radius,
-      border: settings.width + 'px solid ' + settings.color,
-      left: tev.left,
-      top: tev.top,
-      width: 0,
-      height: 0,
-      opacity: 0.4
+      canvas_run(tev, size, on_frame, cb, settings.duration);
     };
 
-    var set_timer = function set_timer(delay, cb1) {
-      setTimeout(function () {
-        return css_run(css, tev, settings, cb1);
-      }, delay);
+    var PULSE_DEFAULTS = {
+      color: 'rgba(255,0,0,0.5)',
+      radius: 100,
+      duration: 3000
     };
 
-    for (var i = 0, delay = 0; i < settings.count; i += 1) {
-      set_timer(delay, i === settings.count - 1 ? cb : undefined);
-      delay += settings.delay;
-    }
-  };
+    var pulse = function pulse(tev, opts, cb) {
+      var settings = _objectSpread({}, PULSE_DEFAULTS, opts);
 
-  var drop_css = function drop_css(tev, options, cb) {
-    drops_css(tev, _objectSpread({}, options, {
-      count: 1
-    }), cb);
-  };
+      var size = settings.radius * 2;
+      var alpha_ipl = interpolate([0, 1, 0.6, 1, 0.6, 1, 0]);
+      var radius_ipl = interpolate([0, settings.radius, settings.radius * 0.6, settings.radius, settings.radius * 0.6, settings.radius, 0]);
 
-  JQ.twinkle('splash-css', splash_css);
-  JQ.twinkle('drops-css', drops_css);
-  JQ.twinkle('drop-css', drop_css);
-})();
+      var on_frame = function on_frame(ctx, frac) {
+        var radius = radius_ipl(frac);
+        var opacity = alpha_ipl(frac);
+        ctx.clear().opacity(opacity).path().circle(ctx.width * 0.5, ctx.height * 0.5, radius).fill(settings.color);
+      };
 
-(function () {
-  var JQ = window.jQuery; // eslint-disable-line no-undef, no-unused-vars
+      canvas_run(tev, size, on_frame, cb, settings.duration);
+    };
 
-  var Objects = {}; // eslint-disable-line no-unused-vars
+    var ORBIT_DEFAULTS = {
+      color: 'rgba(255,0,0,0.5)',
+      radius: 100,
+      duration: 3000,
+      satellites: 10,
+      satellitesRadius: 10,
+      circulations: 1.5
+    };
 
-  (function () {
-    /* globals JQ Objects */
+    var orbit = function orbit(tev, opts, cb) {
+      var settings = _objectSpread({}, ORBIT_DEFAULTS, opts);
+
+      var size = settings.radius * 2;
+      var alpha_ipl = interpolate([0.4, 1, 1, 0.4]);
+      var r = settings.radius - settings.satellitesRadius;
+      var radius_ipl = interpolate([0, r, r, 0]);
+
+      var on_frame = function on_frame(ctx, frac) {
+        var radius = radius_ipl(frac);
+        var opacity = alpha_ipl(frac);
+        var bog = Math.PI * 2 * settings.circulations * frac;
+        ctx.clear().opacity(opacity).translate(ctx.width * 0.5, ctx.height * 0.5);
+        var path = ctx.path();
+
+        for (var i = 0; i < settings.satellites; i += 1) {
+          bog += Math.PI * 2 / settings.satellites;
+          var x = Math.cos(bog) * radius;
+          var y = Math.sin(bog) * radius;
+          ctx.move_to(x, y);
+          path.circle(x, y, settings.satellitesRadius);
+        }
+
+        path.fill(settings.color);
+      };
+
+      canvas_run(tev, size, on_frame, cb, settings.duration);
+    };
+
+    jq.twinkle('drops', drops);
+    jq.twinkle('drop', drop);
+    jq.twinkle('splash', splash);
+    jq.twinkle('pulse', pulse);
+    jq.twinkle('orbit', orbit);
+  });
+  mod('canvas-run', function () {
+    /* globals mod */
+    var _mod2 = mod('util'),
+        jq = _mod2.jq,
+        as_fn = _mod2.as_fn,
+        block_evs = _mod2.block_evs;
+
     var FPS = 25;
 
     var Ctx =
@@ -230,8 +187,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
 
         this.ctx2d = ctx2d;
-        this.width = JQ(ctx2d.canvas).width();
-        this.height = JQ(ctx2d.canvas).height();
+        this.width = jq(ctx2d.canvas).width();
+        this.height = jq(ctx2d.canvas).height();
       }
 
       _createClass(Ctx, [{
@@ -291,7 +248,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return Ctx;
     }();
 
-    var canvas_run = function canvas_run(tev, size, on_frame, on_end, duration) {
+    return function (tev, size, on_frame, on_end, duration) {
       var css = {
         position: 'absolute',
         zIndex: 1000,
@@ -301,15 +258,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         width: size,
         height: size
       };
-
-      var block_ev = function block_ev(ev) {
-        ev.stopImmediatePropagation();
-        ev.preventDefault();
-        return false;
-      };
-
-      var $canvas = JQ("<canvas width=".concat(size, " height=").concat(size, " />")).css(css).bind('click mousedown mouseenter mouseover mousemove', block_ev);
-      JQ(tev.el).after($canvas);
+      var $canvas = jq("<canvas width=".concat(size, " height=").concat(size, " />")).css(css);
+      block_evs($canvas);
+      jq(tev.el).after($canvas);
       var ctx = new Ctx($canvas.get(0).getContext('2d'));
 
       var set_frame_timer = function set_frame_timer(frac) {
@@ -324,10 +275,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         $canvas.remove();
         $canvas = undefined;
         ctx = undefined;
-
-        if (typeof on_end === 'function') {
-          on_end();
-        }
+        as_fn(on_end)();
       };
 
       var frame_count = duration / 1000 * FPS;
@@ -338,7 +286,122 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       setTimeout(clean_up, duration);
     };
+  });
+  mod('css-effects', function () {
+    /* globals mod */
+    var _mod3 = mod('util'),
+        jq = _mod3.jq,
+        as_fn = _mod3.as_fn,
+        block_evs = _mod3.block_evs;
 
+    var css_run = function css_run(css, tev, settings, on_end) {
+      var $dot;
+
+      var clean_up = function clean_up() {
+        $dot.remove();
+        as_fn(on_end)();
+      };
+
+      var fade_out = function fade_out() {
+        $dot.animate({
+          left: tev.left - settings.radius,
+          top: tev.top - settings.radius,
+          width: settings.radius * 2,
+          height: settings.radius * 2,
+          opacity: 0
+        }, settings.duration * 0.5, 'linear', clean_up);
+      };
+
+      var fade_in = function fade_in() {
+        $dot = jq('<div />').css(css);
+        block_evs($dot);
+        jq(tev.el).after($dot);
+        $dot.animate({
+          left: tev.left - settings.radius * 0.5,
+          top: tev.top - settings.radius * 0.5,
+          width: settings.radius,
+          height: settings.radius,
+          opacity: 1
+        }, settings.duration * 0.5, 'linear', fade_out);
+      };
+
+      fade_in();
+    };
+
+    var SPLASH_DEFAULTS = {
+      color: 'rgba(255,0,0,0.5)',
+      radius: 300,
+      duration: 1000
+    };
+
+    var splash_css = function splash_css(tev, opts, cb) {
+      var settings = _objectSpread({}, SPLASH_DEFAULTS, opts);
+
+      var css = {
+        position: 'absolute',
+        zIndex: 1000,
+        display: 'block',
+        borderRadius: settings.radius,
+        backgroundColor: settings.color,
+        boxShadow: '0 0 30px ' + settings.color,
+        left: tev.left,
+        top: tev.top,
+        width: 0,
+        height: 0,
+        opacity: 0.4
+      };
+      css_run(css, tev, settings, cb);
+    };
+
+    var DROPS_DEFAULTS = {
+      color: 'rgba(255,0,0,0.5)',
+      radius: 300,
+      duration: 1000,
+      width: 2,
+      count: 3,
+      delay: 300
+    };
+
+    var drops_css = function drops_css(tev, opts, cb) {
+      var settings = _objectSpread({}, DROPS_DEFAULTS, opts);
+
+      var css = {
+        position: 'absolute',
+        zIndex: 1000,
+        display: 'block',
+        borderRadius: settings.radius,
+        border: settings.width + 'px solid ' + settings.color,
+        left: tev.left,
+        top: tev.top,
+        width: 0,
+        height: 0,
+        opacity: 0.4
+      };
+
+      var set_timer = function set_timer(delay, cb1) {
+        setTimeout(function () {
+          return css_run(css, tev, settings, cb1);
+        }, delay);
+      };
+
+      for (var i = 0, delay = 0; i < settings.count; i += 1) {
+        set_timer(delay, i === settings.count - 1 ? cb : undefined);
+        delay += settings.delay;
+      }
+    };
+
+    var drop_css = function drop_css(tev, opts, cb) {
+      drops_css(tev, _objectSpread({}, opts, {
+        count: 1
+      }), cb);
+    };
+
+    jq.twinkle('splash-css', splash_css);
+    jq.twinkle('drops-css', drops_css);
+    jq.twinkle('drop-css', drop_css);
+  });
+  mod('interpolate', function () {
+    /* globals mod */
     var interpolate = function interpolate(vals) {
       var pts = vals.map(function (y, i) {
         return {
@@ -372,141 +435,107 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       };
     };
 
-    Objects.interpolate = interpolate;
-    Objects.canvas_run = canvas_run;
-  })();
+    return interpolate;
+  });
+  mod('plugin', function () {
+    /* globals mod */
+    var _mod4 = mod('util'),
+        jq = _mod4.jq,
+        is_fn = _mod4.is_fn,
+        as_fn = _mod4.as_fn;
 
-  var DROPS_DEFAULTS = {
-    color: 'rgba(255,0,0,0.5)',
-    radius: 300,
-    duration: 1000,
-    width: 2,
-    count: 3,
-    delay: 300
-  };
+    var DEFAULTS = {
+      widthRatio: 0.5,
+      heightRatio: 0.5,
+      effect: 'splash',
+      effectOptions: undefined,
+      callback: undefined
+    };
+    var effects = {};
 
-  var trans = function trans(x, scale, offset) {
-    scale = scale || 1;
-    offset = offset || 0;
-    x = (x - offset) / scale;
-    return x >= 0 && x <= 1 ? x : undefined;
-  };
+    var add = function add(name, fn) {
+      effects[name] = fn;
+    };
 
-  var drops = function drops(tev, options, cb) {
-    var settings = _objectSpread({}, DROPS_DEFAULTS, options);
+    var start_el = function start_el(el, opts) {
+      var settings = _objectSpread({}, DEFAULTS, opts);
 
-    var size = settings.radius * 2;
-    var alpha_ipl = Objects.interpolate([0.4, 1, 0]);
-    var radius_ipl = Objects.interpolate([0, settings.radius]);
-    var scale = (settings.duration - (settings.count - 1) * settings.delay) / settings.duration;
-    var offset = settings.delay / settings.duration;
+      var fn = effects[settings.effect];
 
-    var on_frame = function on_frame(ctx, frac) {
-      ctx.clear();
+      if (!is_fn(fn)) {
+        as_fn(settings.callback)();
+        return;
+      }
 
-      for (var i = 0; i < settings.count; i += 1) {
-        var f = trans(frac, scale, offset * i);
+      var $el = jq(el);
+      var pos = $el.position();
+      var width = $el.outerWidth(true);
+      var height = $el.outerHeight(true);
+      var left = pos.left + width * settings.widthRatio;
+      var top = pos.top + height * settings.heightRatio;
+      fn({
+        el: el,
+        left: left,
+        top: top
+      }, settings.effectOptions, as_fn(settings.callback));
+    };
 
-        if (f !== undefined) {
-          ctx.opacity(alpha_ipl(f)).path().circle(ctx.width * 0.5, ctx.height * 0.5, radius_ipl(f)).stroke(settings.width, settings.color);
+    var start_els = function start_els(els, opts) {
+      els = Array.from(els);
+      var running = els.length;
+
+      var cb = function cb() {
+        running -= 1;
+
+        if (!running) {
+          as_fn(opts.callback)();
         }
-      }
+      };
+
+      els.forEach(function (el) {
+        return start_el(el, _objectSpread({}, opts, {
+          callback: cb
+        }));
+      });
     };
 
-    Objects.canvas_run(tev, size, on_frame, cb, settings.duration);
-  };
+    jq.twinkle = add;
 
-  var drop = function drop(tev, options, cb) {
-    drops(tev, _objectSpread({}, options, {
-      count: 1
-    }), cb);
-  };
+    jq.fn.twinkle = function main(opts) {
+      start_els(this, opts);
+      return this;
+    };
+  });
+  mod('util', function () {
+    /* globals mod */
+    var jq = window.jQuery; // eslint-disable-line no-undef
 
-  var SPLASH_DEFAULTS = {
-    color: 'rgba(255,0,0,0.5)',
-    radius: 300,
-    duration: 1000
-  };
-
-  var splash = function splash(tev, options, cb) {
-    var settings = _objectSpread({}, SPLASH_DEFAULTS, options);
-
-    var size = settings.radius * 2;
-    var alpha_ipl = Objects.interpolate([0.4, 1, 0]);
-    var radius_ipl = Objects.interpolate([0, settings.radius]);
-
-    var on_frame = function on_frame(ctx, frac) {
-      var radius = radius_ipl(frac);
-      var opacity = alpha_ipl(frac);
-      ctx.clear().opacity(opacity).path().circle(ctx.width * 0.5, ctx.height * 0.5, radius).fill(settings.color);
+    var is_fn = function is_fn(x) {
+      return typeof x === 'function';
     };
 
-    Objects.canvas_run(tev, size, on_frame, cb, settings.duration);
-  };
-
-  var PULSE_DEFAULTS = {
-    color: 'rgba(255,0,0,0.5)',
-    radius: 100,
-    duration: 3000
-  };
-
-  var pulse = function pulse(tev, options, cb) {
-    var settings = _objectSpread({}, PULSE_DEFAULTS, options);
-
-    var size = settings.radius * 2;
-    var alpha_ipl = Objects.interpolate([0, 1, 0.6, 1, 0.6, 1, 0]);
-    var radius_ipl = Objects.interpolate([0, settings.radius, settings.radius * 0.6, settings.radius, settings.radius * 0.6, settings.radius, 0]);
-
-    var on_frame = function on_frame(ctx, frac) {
-      var radius = radius_ipl(frac);
-      var opacity = alpha_ipl(frac);
-      ctx.clear().opacity(opacity).path().circle(ctx.width * 0.5, ctx.height * 0.5, radius).fill(settings.color);
+    var as_fn = function as_fn(x) {
+      return is_fn(x) ? x : function () {
+        return null;
+      };
     };
 
-    Objects.canvas_run(tev, size, on_frame, cb, settings.duration);
-  };
-
-  var ORBIT_DEFAULTS = {
-    color: 'rgba(255,0,0,0.5)',
-    radius: 100,
-    duration: 3000,
-    satellites: 10,
-    satellitesRadius: 10,
-    circulations: 1.5
-  };
-
-  var orbit = function orbit(tev, options, cb) {
-    var settings = _objectSpread({}, ORBIT_DEFAULTS, options);
-
-    var size = settings.radius * 2;
-    var alpha_ipl = Objects.interpolate([0.4, 1, 1, 0.4]);
-    var r = settings.radius - settings.satellitesRadius;
-    var radius_ipl = Objects.interpolate([0, r, r, 0]);
-
-    var on_frame = function on_frame(ctx, frac) {
-      var radius = radius_ipl(frac);
-      var opacity = alpha_ipl(frac);
-      var bog = Math.PI * 2 * settings.circulations * frac;
-      ctx.clear().opacity(opacity).translate(ctx.width * 0.5, ctx.height * 0.5);
-      var path = ctx.path();
-
-      for (var i = 0; i < settings.satellites; i += 1) {
-        bog += Math.PI * 2 / settings.satellites;
-        var x = Math.cos(bog) * radius;
-        var y = Math.sin(bog) * radius;
-        ctx.move_to(x, y);
-        path.circle(x, y, settings.satellitesRadius);
-      }
-
-      path.fill(settings.color);
+    var block_evs = function block_evs(el) {
+      jq(el).bind('click mousedown mouseenter mouseover mousemove', function (ev) {
+        ev.stopImmediatePropagation();
+        ev.preventDefault();
+        return false;
+      });
     };
 
-    Objects.canvas_run(tev, size, on_frame, cb, settings.duration);
-  };
-
-  JQ.twinkle('drops', drops);
-  JQ.twinkle('drop', drop);
-  JQ.twinkle('splash', splash);
-  JQ.twinkle('pulse', pulse);
-  JQ.twinkle('orbit', orbit);
+    return {
+      jq: jq,
+      is_fn: is_fn,
+      as_fn: as_fn,
+      block_evs: block_evs
+    };
+  });
+  mod('plugin');
+  mod('css-effects');
+  mod('canvas-effects');
 })();

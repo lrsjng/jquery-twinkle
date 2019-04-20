@@ -1,8 +1,7 @@
-(() => {
-    const JQ = window.jQuery; // eslint-disable-line no-undef, no-unused-vars
-    const Objects = {}; // eslint-disable-line no-unused-vars
-
-    // @include "canvas-run.js"
+mod('canvas-effects', () => { /* globals mod */
+    const {jq} = mod('util');
+    const interpolate = mod('interpolate');
+    const canvas_run = mod('canvas-run');
 
     const DROPS_DEFAULTS = {
         color: 'rgba(255,0,0,0.5)',
@@ -20,11 +19,11 @@
         return x >= 0 && x <= 1 ? x : undefined;
     };
 
-    const drops = (tev, options, cb) => {
-        const settings = {...DROPS_DEFAULTS, ...options};
+    const drops = (tev, opts, cb) => {
+        const settings = {...DROPS_DEFAULTS, ...opts};
         const size = settings.radius * 2;
-        const alpha_ipl = Objects.interpolate([0.4, 1, 0]);
-        const radius_ipl = Objects.interpolate([0, settings.radius]);
+        const alpha_ipl = interpolate([0.4, 1, 0]);
+        const radius_ipl = interpolate([0, settings.radius]);
         const scale = (settings.duration - (settings.count - 1) * settings.delay) / settings.duration;
         const offset = settings.delay / settings.duration;
 
@@ -41,11 +40,11 @@
             }
         };
 
-        Objects.canvas_run(tev, size, on_frame, cb, settings.duration);
+        canvas_run(tev, size, on_frame, cb, settings.duration);
     };
 
-    const drop = (tev, options, cb) => {
-        drops(tev, {...options, count: 1}, cb);
+    const drop = (tev, opts, cb) => {
+        drops(tev, {...opts, count: 1}, cb);
     };
 
     const SPLASH_DEFAULTS = {
@@ -54,11 +53,11 @@
         duration: 1000
     };
 
-    const splash = (tev, options, cb) => {
-        const settings = {...SPLASH_DEFAULTS, ...options};
+    const splash = (tev, opts, cb) => {
+        const settings = {...SPLASH_DEFAULTS, ...opts};
         const size = settings.radius * 2;
-        const alpha_ipl = Objects.interpolate([0.4, 1, 0]);
-        const radius_ipl = Objects.interpolate([0, settings.radius]);
+        const alpha_ipl = interpolate([0.4, 1, 0]);
+        const radius_ipl = interpolate([0, settings.radius]);
 
         const on_frame = (ctx, frac) => {
             const radius = radius_ipl(frac);
@@ -71,7 +70,7 @@
                 .fill(settings.color);
         };
 
-        Objects.canvas_run(tev, size, on_frame, cb, settings.duration);
+        canvas_run(tev, size, on_frame, cb, settings.duration);
     };
 
     const PULSE_DEFAULTS = {
@@ -80,11 +79,11 @@
         duration: 3000
     };
 
-    const pulse = (tev, options, cb) => {
-        const settings = {...PULSE_DEFAULTS, ...options};
+    const pulse = (tev, opts, cb) => {
+        const settings = {...PULSE_DEFAULTS, ...opts};
         const size = settings.radius * 2;
-        const alpha_ipl = Objects.interpolate([0, 1, 0.6, 1, 0.6, 1, 0]);
-        const radius_ipl = Objects.interpolate([0, settings.radius, settings.radius * 0.6, settings.radius, settings.radius * 0.6, settings.radius, 0]);
+        const alpha_ipl = interpolate([0, 1, 0.6, 1, 0.6, 1, 0]);
+        const radius_ipl = interpolate([0, settings.radius, settings.radius * 0.6, settings.radius, settings.radius * 0.6, settings.radius, 0]);
 
         const on_frame = (ctx, frac) => {
             const radius = radius_ipl(frac);
@@ -97,7 +96,7 @@
                 .fill(settings.color);
         };
 
-        Objects.canvas_run(tev, size, on_frame, cb, settings.duration);
+        canvas_run(tev, size, on_frame, cb, settings.duration);
     };
 
     const ORBIT_DEFAULTS = {
@@ -109,12 +108,12 @@
         circulations: 1.5
     };
 
-    const orbit = (tev, options, cb) => {
-        const settings = {...ORBIT_DEFAULTS, ...options};
+    const orbit = (tev, opts, cb) => {
+        const settings = {...ORBIT_DEFAULTS, ...opts};
         const size = settings.radius * 2;
-        const alpha_ipl = Objects.interpolate([0.4, 1, 1, 0.4]);
+        const alpha_ipl = interpolate([0.4, 1, 1, 0.4]);
         const r = settings.radius - settings.satellitesRadius;
-        const radius_ipl = Objects.interpolate([0, r, r, 0]);
+        const radius_ipl = interpolate([0, r, r, 0]);
 
         const on_frame = (ctx, frac) => {
             const radius = radius_ipl(frac);
@@ -136,12 +135,12 @@
             path.fill(settings.color);
         };
 
-        Objects.canvas_run(tev, size, on_frame, cb, settings.duration);
+        canvas_run(tev, size, on_frame, cb, settings.duration);
     };
 
-    JQ.twinkle('drops', drops);
-    JQ.twinkle('drop', drop);
-    JQ.twinkle('splash', splash);
-    JQ.twinkle('pulse', pulse);
-    JQ.twinkle('orbit', orbit);
-})();
+    jq.twinkle('drops', drops);
+    jq.twinkle('drop', drop);
+    jq.twinkle('splash', splash);
+    jq.twinkle('pulse', pulse);
+    jq.twinkle('orbit', orbit);
+});

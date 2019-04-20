@@ -1,20 +1,13 @@
-(() => {
-    const JQ = window.jQuery; // eslint-disable-line no-undef
+mod('css-effects', () => { /* globals mod */
+    const {jq, as_fn, block_evs} = mod('util');
 
-    const block_ev = ev => {
-        ev.stopImmediatePropagation();
-        ev.preventDefault();
-        return false;
-    };
 
     const css_run = (css, tev, settings, on_end) => {
         let $dot;
 
         const clean_up = () => {
             $dot.remove();
-            if (typeof on_end === 'function') {
-                on_end();
-            }
+            as_fn(on_end)();
         };
 
         const fade_out = () => {
@@ -33,10 +26,9 @@
         };
 
         const fade_in = () => {
-            $dot = JQ('<div />')
-                .css(css)
-                .bind('click mousedown mouseenter mouseover mousemove', block_ev);
-            JQ(tev.el).after($dot);
+            $dot = jq('<div />').css(css);
+            block_evs($dot);
+            jq(tev.el).after($dot);
             $dot.animate(
                 {
                     left: tev.left - settings.radius * 0.5,
@@ -61,8 +53,8 @@
         duration: 1000
     };
 
-    const splash_css = (tev, options, cb) => {
-        const settings = {...SPLASH_DEFAULTS, ...options};
+    const splash_css = (tev, opts, cb) => {
+        const settings = {...SPLASH_DEFAULTS, ...opts};
         const css = {
             position: 'absolute',
             zIndex: 1000,
@@ -90,8 +82,8 @@
         delay: 300
     };
 
-    const drops_css = (tev, options, cb) => {
-        const settings = {...DROPS_DEFAULTS, ...options};
+    const drops_css = (tev, opts, cb) => {
+        const settings = {...DROPS_DEFAULTS, ...opts};
         const css = {
             position: 'absolute',
             zIndex: 1000,
@@ -115,11 +107,12 @@
         }
     };
 
-    const drop_css = (tev, options, cb) => {
-        drops_css(tev, {...options, count: 1}, cb);
+    const drop_css = (tev, opts, cb) => {
+        drops_css(tev, {...opts, count: 1}, cb);
     };
 
-    JQ.twinkle('splash-css', splash_css);
-    JQ.twinkle('drops-css', drops_css);
-    JQ.twinkle('drop-css', drop_css);
-})();
+
+    jq.twinkle('splash-css', splash_css);
+    jq.twinkle('drops-css', drops_css);
+    jq.twinkle('drop-css', drop_css);
+});
