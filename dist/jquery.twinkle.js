@@ -28,11 +28,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
   mod('canvas-effects', function () {
     /* globals mod */
-    var _mod = mod('util'),
-        jq = _mod.jq;
-
     var interpolate = mod('interpolate');
     var canvas_run = mod('canvas-run');
+    var add = mod('plugin');
     var DROPS_DEFAULTS = {
       color: 'rgba(255,0,0,0.5)',
       radius: 300,
@@ -161,18 +159,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       canvas_run(tev, size, on_frame, cb, settings.duration);
     };
 
-    jq.twinkle('drops', drops);
-    jq.twinkle('drop', drop);
-    jq.twinkle('splash', splash);
-    jq.twinkle('pulse', pulse);
-    jq.twinkle('orbit', orbit);
+    add('drops', drops);
+    add('drop', drop);
+    add('splash', splash);
+    add('pulse', pulse);
+    add('orbit', orbit);
   });
   mod('canvas-run', function () {
     /* globals mod */
-    var _mod2 = mod('util'),
-        jq = _mod2.jq,
-        as_fn = _mod2.as_fn,
-        block_evs = _mod2.block_evs;
+    var _mod = mod('util'),
+        jq = _mod.jq,
+        as_fn = _mod.as_fn,
+        block_evs = _mod.block_evs;
 
     var FPS = 25;
 
@@ -289,10 +287,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   });
   mod('css-effects', function () {
     /* globals mod */
-    var _mod3 = mod('util'),
-        jq = _mod3.jq,
-        as_fn = _mod3.as_fn,
-        block_evs = _mod3.block_evs;
+    var _mod2 = mod('util'),
+        jq = _mod2.jq,
+        as_fn = _mod2.as_fn,
+        block_evs = _mod2.block_evs;
+
+    var add = mod('plugin');
 
     var css_run = function css_run(css, tev, settings, on_end) {
       var $dot;
@@ -396,9 +396,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }), cb);
     };
 
-    jq.twinkle('splash-css', splash_css);
-    jq.twinkle('drops-css', drops_css);
-    jq.twinkle('drop-css', drop_css);
+    add('splash-css', splash_css);
+    add('drops-css', drops_css);
+    add('drop-css', drop_css);
   });
   mod('interpolate', function () {
     /* globals mod */
@@ -439,10 +439,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   });
   mod('plugin', function () {
     /* globals mod */
-    var _mod4 = mod('util'),
-        jq = _mod4.jq,
-        is_fn = _mod4.is_fn,
-        as_fn = _mod4.as_fn;
+    var _mod3 = mod('util'),
+        jq = _mod3.jq,
+        is_fn = _mod3.is_fn,
+        as_fn = _mod3.as_fn;
 
     var DEFAULTS = {
       widthRatio: 0.5,
@@ -499,12 +499,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     };
 
-    jq.twinkle = add;
-
     jq.fn.twinkle = function main(opts) {
       start_els(this, opts);
       return this;
     };
+
+    return add;
   });
   mod('util', function () {
     /* globals mod */

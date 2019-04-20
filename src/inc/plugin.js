@@ -43,10 +43,10 @@ mod('plugin', () => { /* globals mod */
         els.forEach(el => start_el(el, {...opts, callback: cb}));
     };
 
-    jq.twinkle = add;
-
     jq.fn.twinkle = function main(opts) {
         start_els(this, opts);
         return this;
     };
+
+    return add;
 });

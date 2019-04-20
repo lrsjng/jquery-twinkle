@@ -1,7 +1,7 @@
 mod('canvas-effects', () => { /* globals mod */
-    const {jq} = mod('util');
     const interpolate = mod('interpolate');
     const canvas_run = mod('canvas-run');
+    const add = mod('plugin');
 
     const DROPS_DEFAULTS = {
         color: 'rgba(255,0,0,0.5)',
@@ -138,9 +138,9 @@ mod('canvas-effects', () => { /* globals mod */
         canvas_run(tev, size, on_frame, cb, settings.duration);
     };
 
-    jq.twinkle('drops', drops);
-    jq.twinkle('drop', drop);
-    jq.twinkle('splash', splash);
-    jq.twinkle('pulse', pulse);
-    jq.twinkle('orbit', orbit);
+    add('drops', drops);
+    add('drop', drop);
+    add('splash', splash);
+    add('pulse', pulse);
+    add('orbit', orbit);
 });

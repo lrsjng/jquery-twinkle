@@ -1,5 +1,6 @@
 mod('css-effects', () => { /* globals mod */
     const {jq, as_fn, block_evs} = mod('util');
+    const add = mod('plugin');
 
 
     const css_run = (css, tev, settings, on_end) => {
@@ -112,7 +113,7 @@ mod('css-effects', () => { /* globals mod */
     };
 
 
-    jq.twinkle('splash-css', splash_css);
-    jq.twinkle('drops-css', drops_css);
-    jq.twinkle('drop-css', drop_css);
+    add('splash-css', splash_css);
+    add('drops-css', drops_css);
+    add('drop-css', drop_css);
 });
