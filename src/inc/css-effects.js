@@ -1,88 +1,74 @@
-(function () {
-'use strict';
-/* CSS Effects */
+(() => {
+    /* CSS Effects */
 
-var $ = jQuery;
+    const JQ = window.jQuery; // eslint-disable-line no-undef
 
-function blockEvents(event) {
-
-    event.stopImmediatePropagation();
-    event.preventDefault();
-    return false;
-}
-
-function animation(css, event, settings, callback) {
-
-    var $dot;
-
-    function cleanUp() {
-
-        $dot.remove();
-        if (callback instanceof Function) {
-            callback();
-        }
-    }
-
-    function fadeOut() {
-
-        $dot.animate(
-            {
-                left: event.position.left - settings.radius,
-                top: event.position.top - settings.radius,
-                width: settings.radius * 2,
-                height: settings.radius * 2,
-                opacity: 0
-            },
-            settings.duration * 0.5,
-            'linear',
-            cleanUp
-        );
-    }
-
-    function fadeIn() {
-
-        $dot = $('<div />')
-                .css(css)
-                .bind('click dblclick mousedown mouseenter mouseover mousemove', blockEvents);
-        $(event.element).after($dot);
-        $dot.animate(
-            {
-                left: event.position.left - settings.radius * 0.5,
-                top: event.position.top - settings.radius * 0.5,
-                width: settings.radius,
-                height: settings.radius,
-                opacity: 1
-            },
-            settings.duration * 0.5,
-            'linear',
-            fadeOut
-        );
-    }
-
-    function stop() {}
-
-    fadeIn();
-
-    return {
-        stop: stop
+    const drop_ev = event => {
+        event.stopImmediatePropagation();
+        event.preventDefault();
+        return false;
     };
-}
+
+    const animation = (css, event, settings, callback) => {
+        let $dot;
+
+        const clean_up = () => {
+            $dot.remove();
+            if (callback instanceof Function) {
+                callback();
+            }
+        };
+
+        const fade_out = () => {
+            $dot.animate(
+                {
+                    left: event.position.left - settings.radius,
+                    top: event.position.top - settings.radius,
+                    width: settings.radius * 2,
+                    height: settings.radius * 2,
+                    opacity: 0
+                },
+                settings.duration * 0.5,
+                'linear',
+                clean_up
+            );
+        };
+
+        const fade_in = () => {
+            $dot = JQ('<div />')
+                .css(css)
+                .bind('click dblclick mousedown mouseenter mouseover mousemove', drop_ev);
+            JQ(event.element).after($dot);
+            $dot.animate(
+                {
+                    left: event.position.left - settings.radius * 0.5,
+                    top: event.position.top - settings.radius * 0.5,
+                    width: settings.radius,
+                    height: settings.radius,
+                    opacity: 1
+                },
+                settings.duration * 0.5,
+                'linear',
+                fade_out
+            );
+        };
+
+        fade_in();
+    };
 
 
-var splashDefaults = {
+    const SPLASH_DEFAULTS = {
         color: 'rgba(255,0,0,0.5)',
         radius: 300,
         duration: 1000
     };
 
-function SplashEffect() {
+    function SplashEffect() {
+        this.id = 'splash-css';
 
-    this.id = 'splash-css';
-
-    this.run = function (event, options, callback) {
-
-        var settings = $.extend({}, splashDefaults, options);
-        var css = {
+        this.run = function run(event, options, callback) {
+            const settings = {...SPLASH_DEFAULTS, ...options};
+            const css = {
                 position: 'absolute',
                 zIndex: 1000,
                 display: 'block',
@@ -96,12 +82,12 @@ function SplashEffect() {
                 opacity: 0.4
             };
 
-        animation(css, event, settings, callback);
-    };
-}
+            animation(css, event, settings, callback);
+        };
+    }
 
 
-var dropsDefaults = {
+    const DROPS_DEFAULTS = {
         color: 'rgba(255,0,0,0.5)',
         radius: 300,
         duration: 1000,
@@ -110,14 +96,12 @@ var dropsDefaults = {
         delay: 300
     };
 
-function DropsEffect() {
+    function DropsEffect() {
+        this.id = 'drops-css';
 
-    this.id = 'drops-css';
-
-    this.run = function (event, options, callback) {
-
-        var settings = $.extend({}, dropsDefaults, options);
-        var css = {
+        this.run = function run(event, options, callback) {
+            const settings = {...DROPS_DEFAULTS, ...options};
+            const css = {
                 position: 'absolute',
                 zIndex: 1000,
                 display: 'block',
@@ -130,35 +114,27 @@ function DropsEffect() {
                 opacity: 0.4
             };
 
-        function setTimer(delay, callback) {
-            setTimeout(function () {
-                animation(css, event, settings, callback);
-            }, delay);
-        }
+            const set_timer = (delay, cb) => {
+                setTimeout(() => animation(css, event, settings, cb), delay);
+            };
 
-        var delay = 0;
-        var i;
+            for (let i = 0, delay = 0; i < settings.count; i += 1) {
+                set_timer(delay, i === settings.count - 1 ? callback : undefined);
+                delay += settings.delay;
+            }
+        };
+    }
 
-        for (i = 0; i < settings.count; i += 1) {
-            setTimer(delay, i === settings.count - 1 ? callback : undefined);
-            delay += settings.delay;
-        }
-    };
-}
+    function DropEffect() {
+        const drops = new DropsEffect();
+        this.id = 'drop-css';
 
-function DropEffect() {
+        this.run = (event, options, callback) => {
+            drops.run(event, {...options, count: 1}, callback);
+        };
+    }
 
-    var drops = new DropsEffect();
-
-    this.id = 'drop-css';
-
-    this.run = function (event, options, callback) {
-
-        drops.run(event, $.extend(options, { count: 1 }), callback);
-    };
-}
-
-
-$.twinkle.add(new SplashEffect()).add(new DropEffect()).add(new DropsEffect());
-
-}());
+    JQ.twinkle.add(new SplashEffect());
+    JQ.twinkle.add(new DropEffect());
+    JQ.twinkle.add(new DropsEffect());
+})();

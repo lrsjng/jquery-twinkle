@@ -1,6 +1,6 @@
 # jQuery.twinkle
 
-[![license][license-img]][github] [![web][web-img]][web] [![github][github-img]][github] [![bower][bower-img]][github]
+[![license][license-img]][github] [![web][web-img]][web] [![github][github-img]][github]
 
 jQuery plugin to get the user's attention.
 
@@ -8,7 +8,7 @@ jQuery plugin to get the user's attention.
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2014 Lars Jung (http://larsjung.de)
+Copyright (c) 2019 Lars Jung (https://larsjung.de)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,10 +29,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
-[web]: http://larsjung.de/jquery-twinkle/
+[web]: https://larsjung.de/jquery-twinkle/
 [github]: https://github.com/lrsjng/jquery-twinkle
 
-[license-img]: http://img.shields.io/badge/license-MIT-a0a060.svg?style=flat-square
-[web-img]: http://img.shields.io/badge/web-larsjung.de/twinkle-a0a060.svg?style=flat-square
-[github-img]: http://img.shields.io/badge/github-lrsjng/jquery--twinkle-a0a060.svg?style=flat-square
-[bower-img]: http://img.shields.io/badge/bower-lrsjng/jquery--twinkle-a0a060.svg?style=flat-square
+[license-img]: https://img.shields.io/badge/license-MIT-a0a060.svg?style=flat-square
+[web-img]: https://img.shields.io/badge/web-larsjung.de/twinkle-a0a060.svg?style=flat-square
+[github-img]: https://img.shields.io/badge/github-lrsjng/jquery--twinkle-a0a060.svg?style=flat-square

@@ -1,43 +1,38 @@
-(function () {
+(() => {
+    /* globals JQ Objects */
 
-var $ = jQuery;
-
-var defaults = {
+    const DEFAULTS = {
         color: 'rgba(255,0,0,0.5)',
         radius: 300,
         duration: 1000,
         width: 2
     };
 
-function DropEffect() {
+    function DropEffect() {
+        this.id = 'drop';
 
-    this.id = 'drop';
+        this.run = (twinkleEvent, options, callback) => {
+            const settings = {...DEFAULTS, ...options};
+            const size = settings.radius * 2;
+            const opa_ipl = new Objects.Interpolator([0.4, 1, 0]);
+            const radius_ipl = new Objects.Interpolator([0, settings.radius]);
 
-    this.run = function (twinkleEvent, options, callback) {
+            const frame = ev => {
+                const radius = radius_ipl.get(ev.frac);
+                const opacity = opa_ipl.get(ev.frac);
+                const ctx = ev.ctx;
 
-        var settings = $.extend({}, defaults, options);
-        var size = settings.radius * 2;
-        var opacityIpl = new Objects.Interpolator([ 0.4, 1, 0 ]);
-        var radiusIpl = new Objects.Interpolator([ 0, settings.radius ]);
+                ctx
+                    .clear()
+                    .opacity(opacity)
+                    .path()
+                    .circle(ctx.getWidth() * 0.5, ctx.getHeight() * 0.5, radius)
+                    .stroke(settings.width, settings.color);
+            };
 
-        function frame(frameEvent) {
+            new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
+        };
+    }
 
-            var radius = radiusIpl.get(frameEvent.frac);
-            var opacity = opacityIpl.get(frameEvent.frac);
-            var ctx = frameEvent.ctx;
-
-            ctx
-                .clear()
-                .opacity(opacity)
-                .path()
-                .circle(ctx.getWidth() * 0.5, ctx.getHeight() * 0.5, radius)
-                .stroke(settings.width, settings.color);
-        }
-
-        new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
-    };
-}
-
-$.twinkle.add(new DropEffect());
-
-}());
+    JQ.twinkle.add(new DropEffect());
+})();

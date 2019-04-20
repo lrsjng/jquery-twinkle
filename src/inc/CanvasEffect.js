@@ -1,75 +1,69 @@
-(function () {
+(() => {
+    /* globals JQ Objects */
 
-function CanvasEffect(twinkleEvent, width, height, frame, callback) {
+    function CanvasEffect(twinkleEvent, width, height, frame, callback) {
+        if (!(this instanceof Objects.CanvasEffect)) {
+            return new Objects.CanvasEffect(twinkleEvent, width, height, frame, callback);
+        }
 
-    if (!(this instanceof Objects.CanvasEffect)) {
-        return new Objects.CanvasEffect(twinkleEvent, width, height, frame, callback);
-    }
-
-    var element = twinkleEvent.element;
-    var x = twinkleEvent.position.left;
-    var y = twinkleEvent.position.top;
-    var css = {
+        const element = twinkleEvent.element;
+        const x = twinkleEvent.position.left;
+        const y = twinkleEvent.position.top;
+        const css = {
             position: 'absolute',
             zIndex: 1000,
             display: 'block',
             left: x - width * 0.5,
             top: y - height * 0.5,
-            width: width,
-            height: height
+            width,
+            height
         };
 
-    this.run = function (duration, fps) {
+        this.run = (duration, fps) => {
+            const frame_count = duration / 1000 * fps;
+            const delta = 1 / frame_count;
+            let $canvas;
+            let ctx;
 
-        var $canvas, ctx, i;
-        var frameCount = duration / 1000 * fps;
-        var delta = 1 / frameCount;
+            const set_frame_timer = fraction => {
+                setTimeout(() => {
+                    if (ctx) {
+                        frame({
+                            ctx,
+                            frac: fraction,
+                            millis: duration * fraction
+                        });
+                    }
+                }, duration * fraction);
+            };
 
-        function setFrameTimer(fraction) {
-
-            setTimeout(function () {
-
-                if (ctx) {
-                    frame({
-                        ctx: ctx,
-                        frac: fraction,
-                        millis: duration * fraction
-                    });
+            const clean_up = () => {
+                $canvas.remove();
+                $canvas = undefined;
+                ctx = undefined;
+                if (callback instanceof Function) {
+                    callback();
                 }
-            }, duration * fraction);
-        }
+            };
 
-        function cleanUp() {
+            const block_ev = ev => {
+                ev.stopImmediatePropagation();
+                ev.preventDefault();
+                return false;
+            };
 
-            $canvas.remove();
-            $canvas = undefined;
-            ctx = undefined;
-            if (callback instanceof Function) {
-                callback();
+            $canvas = JQ('<canvas />').attr('width', width).attr('height', height).css(css);
+            JQ(element).after($canvas);
+            $canvas.bind('click dblclick mousedown mouseenter mouseover mousemove', block_ev);
+            ctx = new Objects.Ctx($canvas.get(0).getContext('2d'));
+
+            for (let i = 0; i <= frame_count; i += 1) {
+                set_frame_timer(i * delta);
             }
-        }
 
-        function blockEvents(event) {
+            setTimeout(clean_up, duration);
+        };
+    }
 
-            event.stopImmediatePropagation();
-            event.preventDefault();
-            return false;
-        }
-
-        $canvas = jQuery('<canvas />').attr('width', width).attr('height', height).css(css);
-        jQuery(element).after($canvas);
-        $canvas.bind('click dblclick mousedown mouseenter mouseover mousemove', blockEvents);
-        ctx = new Objects.Ctx($canvas.get(0).getContext('2d'));
-
-        for (i = 0; i <= frameCount; i += 1) {
-            setFrameTimer(i * delta);
-        }
-
-        setTimeout(cleanUp, duration);
-    };
-}
-
-
-Objects.CanvasEffect = CanvasEffect;
-
-}());
+    Objects.CanvasEffect = CanvasEffect;
+})();

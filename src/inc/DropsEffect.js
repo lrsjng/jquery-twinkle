@@ -1,8 +1,7 @@
-(function () {
+(() => {
+    /* globals JQ Objects */
 
-var $ = jQuery;
-
-var defaults = {
+    const DEFAULTS = {
         color: 'rgba(255,0,0,0.5)',
         radius: 300,
         duration: 1000,
@@ -11,46 +10,45 @@ var defaults = {
         delay: 100
     };
 
-function DropsEffect() {
+    function DropsEffect() {
+        this.id = 'drops';
 
-    this.id = 'drops';
+        this.run = (twinkleEvent, options, callback) => {
+            const settings = {...DEFAULTS, ...options};
+            const size = settings.radius * 2;
+            const opa_ipl = new Objects.Interpolator([0.4, 1, 0]);
+            const radius_ipl = new Objects.Interpolator([0, settings.radius]);
+            const scale = (settings.duration - (settings.count - 1) * settings.delay) / settings.duration;
+            const offset = settings.delay / settings.duration;
 
-    this.run = function (twinkleEvent, options, callback) {
+            const frame = ev => {
+                let i;
+                let frac;
+                let radius;
+                let opacity;
+                const ctx = ev.ctx;
+                const width = ctx.getWidth();
+                const height = ctx.getHeight();
 
-        var settings = $.extend({}, defaults, options);
-        var size = settings.radius * 2;
-        var opacityIpl = new Objects.Interpolator([ 0.4, 1, 0 ]);
-        var radiusIpl = new Objects.Interpolator([ 0, settings.radius ]);
-        var scale = (settings.duration - (settings.count - 1) * settings.delay) / settings.duration;
-        var offset = settings.delay / settings.duration;
+                ctx.clear();
+                for (i = 0; i < settings.count; i += 1) {
+                    frac = Objects.Interpolator.scale(ev.frac, scale, offset * i);
 
-        function frame(frameEvent) {
-
-            var i, frac, radius, opacity;
-            var ctx = frameEvent.ctx;
-            var width = ctx.getWidth();
-            var height = ctx.getHeight();
-
-            ctx.clear();
-            for (i = 0; i < settings.count; i += 1) {
-                frac = Objects.Interpolator.scale(frameEvent.frac, scale, offset * i);
-
-                if (frac !== undefined) {
-                    radius = radiusIpl.get(frac);
-                    opacity = opacityIpl.get(frac);
-                    ctx
-                        .opacity(opacity)
-                        .path()
-                        .circle(width * 0.5, height * 0.5, radius)
-                        .stroke(settings.width, settings.color);
+                    if (frac !== undefined) {
+                        radius = radius_ipl.get(frac);
+                        opacity = opa_ipl.get(frac);
+                        ctx
+                            .opacity(opacity)
+                            .path()
+                            .circle(width * 0.5, height * 0.5, radius)
+                            .stroke(settings.width, settings.color);
+                    }
                 }
-            }
-        }
+            };
 
-        new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
-    };
-}
+            new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
+        };
+    }
 
-$.twinkle.add(new DropsEffect());
-
-}());
+    JQ.twinkle.add(new DropsEffect());
+})();
