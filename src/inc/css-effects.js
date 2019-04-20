@@ -7,21 +7,21 @@
         return false;
     };
 
-    const animation = (css, ev, settings, callback) => {
+    const css_run = (css, tev, settings, on_end) => {
         let $dot;
 
         const clean_up = () => {
             $dot.remove();
-            if (callback instanceof Function) {
-                callback();
+            if (typeof on_end === 'function') {
+                on_end();
             }
         };
 
         const fade_out = () => {
             $dot.animate(
                 {
-                    left: ev.position.left - settings.radius,
-                    top: ev.position.top - settings.radius,
+                    left: tev.left - settings.radius,
+                    top: tev.top - settings.radius,
                     width: settings.radius * 2,
                     height: settings.radius * 2,
                     opacity: 0
@@ -35,12 +35,12 @@
         const fade_in = () => {
             $dot = JQ('<div />')
                 .css(css)
-                .bind('click dblclick mousedown mouseenter mouseover mousemove', block_ev);
-            JQ(ev.element).after($dot);
+                .bind('click mousedown mouseenter mouseover mousemove', block_ev);
+            JQ(tev.el).after($dot);
             $dot.animate(
                 {
-                    left: ev.position.left - settings.radius * 0.5,
-                    top: ev.position.top - settings.radius * 0.5,
+                    left: tev.left - settings.radius * 0.5,
+                    top: tev.top - settings.radius * 0.5,
                     width: settings.radius,
                     height: settings.radius,
                     opacity: 1
@@ -61,7 +61,7 @@
         duration: 1000
     };
 
-    const splash_css = (ev, options, callback) => {
+    const splash_css = (tev, options, cb) => {
         const settings = {...SPLASH_DEFAULTS, ...options};
         const css = {
             position: 'absolute',
@@ -70,14 +70,14 @@
             borderRadius: settings.radius,
             backgroundColor: settings.color,
             boxShadow: '0 0 30px ' + settings.color,
-            left: ev.position.left,
-            top: ev.position.top,
+            left: tev.left,
+            top: tev.top,
             width: 0,
             height: 0,
             opacity: 0.4
         };
 
-        animation(css, ev, settings, callback);
+        css_run(css, tev, settings, cb);
     };
 
 
@@ -90,7 +90,7 @@
         delay: 300
     };
 
-    const drops_css = (ev, options, callback) => {
+    const drops_css = (tev, options, cb) => {
         const settings = {...DROPS_DEFAULTS, ...options};
         const css = {
             position: 'absolute',
@@ -98,28 +98,28 @@
             display: 'block',
             borderRadius: settings.radius,
             border: settings.width + 'px solid ' + settings.color,
-            left: ev.position.left,
-            top: ev.position.top,
+            left: tev.left,
+            top: tev.top,
             width: 0,
             height: 0,
             opacity: 0.4
         };
 
-        const set_timer = (delay, cb) => {
-            setTimeout(() => animation(css, ev, settings, cb), delay);
+        const set_timer = (delay, cb1) => {
+            setTimeout(() => css_run(css, tev, settings, cb1), delay);
         };
 
         for (let i = 0, delay = 0; i < settings.count; i += 1) {
-            set_timer(delay, i === settings.count - 1 ? callback : undefined);
+            set_timer(delay, i === settings.count - 1 ? cb : undefined);
             delay += settings.delay;
         }
     };
 
-    const drop_css = (ev, options, callback) => {
-        drops_css(ev, {...options, count: 1}, callback);
+    const drop_css = (tev, options, cb) => {
+        drops_css(tev, {...options, count: 1}, cb);
     };
 
-    JQ.twinkle.add('splash-css', splash_css);
-    JQ.twinkle.add('drops-css', drops_css);
-    JQ.twinkle.add('drop-css', drop_css);
+    JQ.twinkle('splash-css', splash_css);
+    JQ.twinkle('drops-css', drops_css);
+    JQ.twinkle('drop-css', drop_css);
 })();

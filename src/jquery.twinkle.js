@@ -12,27 +12,19 @@
         callback: undefined
     };
 
-    const twinkle_ev = (offX, offY, el, posX, posY) => {
-        return {
-            offset: {left: offX, top: offY},
-            element: el,
-            position: {left: posX, top: posY}
-        };
-    };
-
     const effects = {};
 
     const add = (name, fn) => {
         effects[name] = fn;
     };
 
-    const start = (ev, options) => {
-        const settings = {...DEFAULTS, ...options};
+    const start = (tev, opts) => {
+        const settings = {...DEFAULTS, ...opts};
         const fn = effects[settings.effect];
 
         if (is_fn(fn)) {
-            ev.element = ev.element || 'body';
-            fn(ev, settings.effectOptions, () => {
+            tev.el = tev.el || 'body';
+            fn(tev, settings.effectOptions, () => {
                 if (is_fn(settings.callback)) {
                     settings.callback();
                 }
@@ -40,42 +32,37 @@
         }
     };
 
-    const start_el = (el, options) => {
-        const settings = {...DEFAULTS, ...options};
+    const start_el = (el, opts) => {
+        const settings = {...DEFAULTS, ...opts};
         const $el = JQ(el);
-        const offset = $el.offset();
-        const position = $el.position();
+        const pos = $el.position();
         const width = $el.outerWidth(true);
         const height = $el.outerHeight(true);
-        const offX = offset.left + width * settings.widthRatio;
-        const offY = offset.top + height * settings.heightRatio;
-        const posX = position.left + width * settings.widthRatio;
-        const posY = position.top + height * settings.heightRatio;
-
-        return start(twinkle_ev(offX, offY, el, posX, posY), options);
+        const left = pos.left + width * settings.widthRatio;
+        const top = pos.top + height * settings.heightRatio;
+        return start({el, left, top}, opts);
     };
 
-    const start_els = (els, options) => {
-        const settings = {...DEFAULTS, ...options};
-        let delay = settings.delay;
+    const start_els = (els, opts) => {
+        const settings = {...DEFAULTS, ...opts};
         els = Array.from(els);
         const last = els.length - 1;
+        let delay = settings.delay;
 
         els.forEach((el, idx) => {
-            const opts = {...options};
+            const opts_i = {...opts};
             if (idx !== last) {
-                opts.callback = null;
+                opts_i.callback = null;
             }
-            setTimeout(() => start_el(el, opts), delay);
+            setTimeout(() => start_el(el, opts_i), delay);
             delay += settings.gap;
         });
     };
 
-    JQ.twinkle = (el, left, top, opts) => start(twinkle_ev(0, 0, el, left, top), opts);
-    JQ.twinkle.add = add;
+    JQ.twinkle = add;
 
-    JQ.fn.twinkle = function main(options) {
-        start_els(this, options);
+    JQ.fn.twinkle = function main(opts) {
+        start_els(this, opts);
         return this;
     };
 })();
