@@ -1,15 +1,13 @@
 (() => {
-    /* CSS Effects */
-
     const JQ = window.jQuery; // eslint-disable-line no-undef
 
-    const drop_ev = event => {
-        event.stopImmediatePropagation();
-        event.preventDefault();
+    const block_ev = ev => {
+        ev.stopImmediatePropagation();
+        ev.preventDefault();
         return false;
     };
 
-    const animation = (css, event, settings, callback) => {
+    const animation = (css, ev, settings, callback) => {
         let $dot;
 
         const clean_up = () => {
@@ -22,8 +20,8 @@
         const fade_out = () => {
             $dot.animate(
                 {
-                    left: event.position.left - settings.radius,
-                    top: event.position.top - settings.radius,
+                    left: ev.position.left - settings.radius,
+                    top: ev.position.top - settings.radius,
                     width: settings.radius * 2,
                     height: settings.radius * 2,
                     opacity: 0
@@ -37,12 +35,12 @@
         const fade_in = () => {
             $dot = JQ('<div />')
                 .css(css)
-                .bind('click dblclick mousedown mouseenter mouseover mousemove', drop_ev);
-            JQ(event.element).after($dot);
+                .bind('click dblclick mousedown mouseenter mouseover mousemove', block_ev);
+            JQ(ev.element).after($dot);
             $dot.animate(
                 {
-                    left: event.position.left - settings.radius * 0.5,
-                    top: event.position.top - settings.radius * 0.5,
+                    left: ev.position.left - settings.radius * 0.5,
+                    top: ev.position.top - settings.radius * 0.5,
                     width: settings.radius,
                     height: settings.radius,
                     opacity: 1
@@ -63,28 +61,24 @@
         duration: 1000
     };
 
-    function SplashEffect() {
-        this.id = 'splash-css';
-
-        this.run = function run(event, options, callback) {
-            const settings = {...SPLASH_DEFAULTS, ...options};
-            const css = {
-                position: 'absolute',
-                zIndex: 1000,
-                display: 'block',
-                borderRadius: settings.radius,
-                backgroundColor: settings.color,
-                boxShadow: '0 0 30px ' + settings.color,
-                left: event.position.left,
-                top: event.position.top,
-                width: 0,
-                height: 0,
-                opacity: 0.4
-            };
-
-            animation(css, event, settings, callback);
+    const splash_css = (ev, options, callback) => {
+        const settings = {...SPLASH_DEFAULTS, ...options};
+        const css = {
+            position: 'absolute',
+            zIndex: 1000,
+            display: 'block',
+            borderRadius: settings.radius,
+            backgroundColor: settings.color,
+            boxShadow: '0 0 30px ' + settings.color,
+            left: ev.position.left,
+            top: ev.position.top,
+            width: 0,
+            height: 0,
+            opacity: 0.4
         };
-    }
+
+        animation(css, ev, settings, callback);
+    };
 
 
     const DROPS_DEFAULTS = {
@@ -96,45 +90,36 @@
         delay: 300
     };
 
-    function DropsEffect() {
-        this.id = 'drops-css';
-
-        this.run = function run(event, options, callback) {
-            const settings = {...DROPS_DEFAULTS, ...options};
-            const css = {
-                position: 'absolute',
-                zIndex: 1000,
-                display: 'block',
-                borderRadius: settings.radius,
-                border: settings.width + 'px solid ' + settings.color,
-                left: event.position.left,
-                top: event.position.top,
-                width: 0,
-                height: 0,
-                opacity: 0.4
-            };
-
-            const set_timer = (delay, cb) => {
-                setTimeout(() => animation(css, event, settings, cb), delay);
-            };
-
-            for (let i = 0, delay = 0; i < settings.count; i += 1) {
-                set_timer(delay, i === settings.count - 1 ? callback : undefined);
-                delay += settings.delay;
-            }
+    const drops_css = (ev, options, callback) => {
+        const settings = {...DROPS_DEFAULTS, ...options};
+        const css = {
+            position: 'absolute',
+            zIndex: 1000,
+            display: 'block',
+            borderRadius: settings.radius,
+            border: settings.width + 'px solid ' + settings.color,
+            left: ev.position.left,
+            top: ev.position.top,
+            width: 0,
+            height: 0,
+            opacity: 0.4
         };
-    }
 
-    function DropEffect() {
-        const drops = new DropsEffect();
-        this.id = 'drop-css';
-
-        this.run = (event, options, callback) => {
-            drops.run(event, {...options, count: 1}, callback);
+        const set_timer = (delay, cb) => {
+            setTimeout(() => animation(css, ev, settings, cb), delay);
         };
-    }
 
-    JQ.twinkle.add(new SplashEffect());
-    JQ.twinkle.add(new DropEffect());
-    JQ.twinkle.add(new DropsEffect());
+        for (let i = 0, delay = 0; i < settings.count; i += 1) {
+            set_timer(delay, i === settings.count - 1 ? callback : undefined);
+            delay += settings.delay;
+        }
+    };
+
+    const drop_css = (ev, options, callback) => {
+        drops_css(ev, {...options, count: 1}, callback);
+    };
+
+    JQ.twinkle.add('splash-css', splash_css);
+    JQ.twinkle.add('drops-css', drops_css);
+    JQ.twinkle.add('drop-css', drop_css);
 })();

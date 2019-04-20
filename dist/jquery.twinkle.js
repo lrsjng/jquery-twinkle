@@ -5,16 +5,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
 (function () {
-  var WIN = window; // eslint-disable-line no-undef
-
-  var JQ = WIN.jQuery;
+  var JQ = window.jQuery; // eslint-disable-line no-undef
 
   var is_fn = function is_fn(x) {
     return typeof x === 'function';
@@ -30,121 +22,98 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     callback: undefined
   };
 
-  function TwinkleEvent(offX, offY, el, posX, posY) {
-    this.offset = {
-      left: offX,
-      top: offY
+  var twinkle_ev = function twinkle_ev(offX, offY, el, posX, posY) {
+    return {
+      offset: {
+        left: offX,
+        top: offY
+      },
+      element: el,
+      position: {
+        left: posX,
+        top: posY
+      }
     };
-    this.element = el;
-    this.position = {
-      left: posX,
-      top: posY
-    };
-  }
+  };
 
-  var Twinkler =
-  /*#__PURE__*/
-  function () {
-    function Twinkler() {
-      _classCallCheck(this, Twinkler);
+  var effects = {};
 
-      this.effects = {};
+  var add = function add(name, fn) {
+    effects[name] = fn;
+  };
+
+  var start = function start(ev, options) {
+    var settings = _objectSpread({}, DEFAULTS, options);
+
+    var fn = effects[settings.effect];
+
+    if (is_fn(fn)) {
+      ev.element = ev.element || 'body';
+      fn(ev, settings.effectOptions, function () {
+        if (is_fn(settings.callback)) {
+          settings.callback();
+        }
+      });
     }
+  };
 
-    _createClass(Twinkler, [{
-      key: "add",
-      value: function add(effect) {
-        if (!this.effects[effect.id]) {
-          this.effects[effect.id] = effect;
-        }
+  var start_el = function start_el(el, options) {
+    var settings = _objectSpread({}, DEFAULTS, options);
+
+    var $el = JQ(el);
+    var offset = $el.offset();
+    var position = $el.position();
+    var width = $el.outerWidth(true);
+    var height = $el.outerHeight(true);
+    var offX = offset.left + width * settings.widthRatio;
+    var offY = offset.top + height * settings.heightRatio;
+    var posX = position.left + width * settings.widthRatio;
+    var posY = position.top + height * settings.heightRatio;
+    return start(twinkle_ev(offX, offY, el, posX, posY), options);
+  };
+
+  var start_els = function start_els(els, options) {
+    var settings = _objectSpread({}, DEFAULTS, options);
+
+    var delay = settings.delay;
+    els = Array.from(els);
+    var last = els.length - 1;
+    els.forEach(function (el, idx) {
+      var opts = _objectSpread({}, options);
+
+      if (idx !== last) {
+        opts.callback = null;
       }
-    }, {
-      key: "start",
-      value: function start(ev, options) {
-        var settings = _objectSpread({}, DEFAULTS, options);
 
-        var effect = this.effects[settings.effect];
-
-        if (effect) {
-          ev.element = ev.element || 'body';
-          effect.run(ev, settings.effectOptions, function () {
-            if (is_fn(settings.callback)) {
-              settings.callback();
-            }
-          });
-        }
-      }
-    }, {
-      key: "start_el",
-      value: function start_el(el, options) {
-        var settings = _objectSpread({}, DEFAULTS, options);
-
-        var $el = JQ(el);
-        var offset = $el.offset();
-        var position = $el.position();
-        var width = $el.outerWidth(true);
-        var height = $el.outerHeight(true);
-        var offX = offset.left + width * settings.widthRatio;
-        var offY = offset.top + height * settings.heightRatio;
-        var posX = position.left + width * settings.widthRatio;
-        var posY = position.top + height * settings.heightRatio;
-        return this.start(new TwinkleEvent(offX, offY, el, posX, posY), options);
-      }
-    }, {
-      key: "start_els",
-      value: function start_els(els, options) {
-        var _this = this;
-
-        var settings = _objectSpread({}, DEFAULTS, options);
-
-        var delay = settings.delay;
-        els = Array.from(els);
-        var last = els.length - 1;
-        els.forEach(function (el, idx) {
-          var opts = _objectSpread({}, options);
-
-          if (idx !== last) {
-            opts.callback = null;
-          }
-
-          setTimeout(function () {
-            return _this.start_el(el, opts);
-          }, delay);
-          delay += settings.gap;
-        });
-      }
-    }]);
-
-    return Twinkler;
-  }();
-
-  var twinkler = new Twinkler();
+      setTimeout(function () {
+        return start_el(el, opts);
+      }, delay);
+      delay += settings.gap;
+    });
+  };
 
   JQ.twinkle = function (el, left, top, opts) {
-    return twinkler.start(new TwinkleEvent(0, 0, el, left, top), opts);
+    return start(twinkle_ev(0, 0, el, left, top), opts);
   };
 
-  JQ.twinkle.add = function (effect) {
-    return twinkler.add(effect);
-  };
+  JQ.twinkle.add = add;
 
   JQ.fn.twinkle = function main(options) {
-    twinkler.start_els(this, options);
+    start_els(this, options);
     return this;
   };
 })();
 
 (function () {
-  /* CSS Effects */
   var JQ = window.jQuery; // eslint-disable-line no-undef
 
-  var drop_ev = function drop_ev(event) {
-    event.stopImmediatePropagation();
-    event.preventDefault();
+  var block_ev = function block_ev(ev) {
+    ev.stopImmediatePropagation();
+    ev.preventDefault();
     return false;
   };
 
-  var animation = function animation(css, event, settings, callback) {
+  var animation = function animation(css, ev, settings, callback) {
     var $dot;
 
     var clean_up = function clean_up() {
@@ -157,8 +126,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
     var fade_out = function fade_out() {
       $dot.animate({
-        left: event.position.left - settings.radius,
-        top: event.position.top - settings.radius,
+        left: ev.position.left - settings.radius,
+        top: ev.position.top - settings.radius,
         width: settings.radius * 2,
         height: settings.radius * 2,
         opacity: 0
@@ -166,11 +135,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     };
 
     var fade_in = function fade_in() {
-      $dot = JQ('<div />').css(css).bind('click dblclick mousedown mouseenter mouseover mousemove', drop_ev);
-      JQ(event.element).after($dot);
+      $dot = JQ('<div />').css(css).bind('click dblclick mousedown mouseenter mouseover mousemove', block_ev);
+      JQ(ev.element).after($dot);
       $dot.animate({
-        left: event.position.left - settings.radius * 0.5,
-        top: event.position.top - settings.radius * 0.5,
+        left: ev.position.left - settings.radius * 0.5,
+        top: ev.position.top - settings.radius * 0.5,
         width: settings.radius,
         height: settings.radius,
         opacity: 1
@@ -186,28 +155,24 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     duration: 1000
   };
 
-  function SplashEffect() {
-    this.id = 'splash-css';
+  var splash_css = function splash_css(ev, options, callback) {
+    var settings = _objectSpread({}, SPLASH_DEFAULTS, options);
 
-    this.run = function run(event, options, callback) {
-      var settings = _objectSpread({}, SPLASH_DEFAULTS, options);
-
-      var css = {
-        position: 'absolute',
-        zIndex: 1000,
-        display: 'block',
-        borderRadius: settings.radius,
-        backgroundColor: settings.color,
-        boxShadow: '0 0 30px ' + settings.color,
-        left: event.position.left,
-        top: event.position.top,
-        width: 0,
-        height: 0,
-        opacity: 0.4
-      };
-      animation(css, event, settings, callback);
+    var css = {
+      position: 'absolute',
+      zIndex: 1000,
+      display: 'block',
+      borderRadius: settings.radius,
+      backgroundColor: settings.color,
+      boxShadow: '0 0 30px ' + settings.color,
+      left: ev.position.left,
+      top: ev.position.top,
+      width: 0,
+      height: 0,
+      opacity: 0.4
     };
-  }
+    animation(css, ev, settings, callback);
+  };
 
   var DROPS_DEFAULTS = {
     color: 'rgba(255,0,0,0.5)',
@@ -218,90 +183,61 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     delay: 300
   };
 
-  function DropsEffect() {
-    this.id = 'drops-css';
+  var drops_css = function drops_css(ev, options, callback) {
+    var settings = _objectSpread({}, DROPS_DEFAULTS, options);
 
-    this.run = function run(event, options, callback) {
-      var settings = _objectSpread({}, DROPS_DEFAULTS, options);
-
-      var css = {
-        position: 'absolute',
-        zIndex: 1000,
-        display: 'block',
-        borderRadius: settings.radius,
-        border: settings.width + 'px solid ' + settings.color,
-        left: event.position.left,
-        top: event.position.top,
-        width: 0,
-        height: 0,
-        opacity: 0.4
-      };
-
-      var set_timer = function set_timer(delay, cb) {
-        setTimeout(function () {
-          return animation(css, event, settings, cb);
-        }, delay);
-      };
-
-      for (var i = 0, delay = 0; i < settings.count; i += 1) {
-        set_timer(delay, i === settings.count - 1 ? callback : undefined);
-        delay += settings.delay;
-      }
+    var css = {
+      position: 'absolute',
+      zIndex: 1000,
+      display: 'block',
+      borderRadius: settings.radius,
+      border: settings.width + 'px solid ' + settings.color,
+      left: ev.position.left,
+      top: ev.position.top,
+      width: 0,
+      height: 0,
+      opacity: 0.4
     };
-  }
 
-  function DropEffect() {
-    var drops = new DropsEffect();
-    this.id = 'drop-css';
-
-    this.run = function (event, options, callback) {
-      drops.run(event, _objectSpread({}, options, {
-        count: 1
-      }), callback);
+    var set_timer = function set_timer(delay, cb) {
+      setTimeout(function () {
+        return animation(css, ev, settings, cb);
+      }, delay);
     };
-  }
 
-  JQ.twinkle.add(new SplashEffect());
-  JQ.twinkle.add(new DropEffect());
-  JQ.twinkle.add(new DropsEffect());
+    for (var i = 0, delay = 0; i < settings.count; i += 1) {
+      set_timer(delay, i === settings.count - 1 ? callback : undefined);
+      delay += settings.delay;
+    }
+  };
+
+  var drop_css = function drop_css(ev, options, callback) {
+    drops_css(ev, _objectSpread({}, options, {
+      count: 1
+    }), callback);
+  };
+
+  JQ.twinkle.add('splash-css', splash_css);
+  JQ.twinkle.add('drops-css', drops_css);
+  JQ.twinkle.add('drop-css', drop_css);
 })();
 
 (function () {
-  /* Canvas Effects */
-  var WIN = window; // eslint-disable-line no-undef
-
-  var $ = WIN.jQuery; // eslint-disable-line no-unused-vars
-
-  var JQ = WIN.jQuery; // eslint-disable-line no-unused-vars
+  var JQ = window.jQuery; // eslint-disable-line no-undef, no-unused-vars
 
   var Objects = {}; // eslint-disable-line no-unused-vars
 
   (function () {
     /* globals Objects */
-    function Interpolator(values) {
-      function equiDist(vals) {
-        var dist = 1 / (vals.length - 1);
-        var pts = [];
+    var interpolate = function interpolate(values) {
+      var points = values.map(function (y, i) {
+        return {
+          x: i / (values.length - 1),
+          y: values[i]
+        };
+      });
 
-        for (var i = 0; i < vals.length; i += 1) {
-          pts.push({
-            x: dist * i,
-            y: vals[i]
-          });
-        }
-
-        return pts;
-      }
-
-      var points = equiDist(values);
-
-      function interpolate(p1, p2, x) {
-        var m = (p2.y - p1.y) / (p2.x - p1.x);
-        var y = p1.y + m * (x - p1.x);
-        return y;
-      }
-
-      function findSection(x) {
+      var find_section = function find_section(x) {
         for (var i = 1; i < points.length; i += 1) {
           var prev = points[i - 1];
           var current = points[i];
@@ -312,335 +248,193 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }
 
         return undefined;
-      }
-
-      this.get = function (x) {
-        x = Math.max(0, Math.min(1, x));
-        var secPts = findSection(x);
-        return interpolate(secPts[0], secPts[1], x);
       };
-    }
 
-    function scaleit(x, scale, offset) {
-      scale = scale || 1;
-      offset = offset || 0;
-      x = (x - offset) / scale;
-      return x >= 0 && x <= 1 ? x : undefined;
-    }
+      var linear = function linear(p1, p2, x) {
+        var m = (p2.y - p1.y) / (p2.x - p1.x);
+        return p1.y + m * (x - p1.x);
+      };
 
-    Objects.Interpolator = Interpolator;
-    Objects.Interpolator.scale = scaleit;
+      return function (x) {
+        x = x < 0 ? 0 : x > 1 ? 1 : x;
+        var section = find_section(x);
+        return linear(section[0], section[1], x);
+      };
+    };
+
+    Objects.interpolate = interpolate;
   })();
 
   (function () {
     /* globals JQ Objects */
-    function Path(ctx) {
-      var self = this;
-      var context = ctx.getContext();
-      context.beginPath();
+    function Ctx(ctx2d) {
+      var _this = this;
 
-      self.fill = function (fillStyle) {
-        context.fillStyle = fillStyle;
-        context.fill();
-        return ctx;
-      };
-
-      self.stroke = function (lineWidth, strokeStyle) {
-        context.lineWidth = lineWidth;
-        context.strokeStyle = strokeStyle;
-        context.stroke();
-        return ctx;
-      };
-
-      self.draw = function (lineWidth, strokeStyle, fillStyle) {
-        self.fill(fillStyle);
-        self.stroke(lineWidth, strokeStyle);
-        return ctx;
-      };
-
-      self.circle = function (x, y, radius) {
-        context.arc(x, y, radius, 0, 2 * Math.PI, false);
-        return self;
-      };
-    }
-
-    function Ctx(context) {
-      if (!context || !context.canvas) {
+      if (!ctx2d || !ctx2d.canvas) {
         return undefined;
       }
 
-      var self = this;
-      var width = JQ(context.canvas).width();
-      var height = JQ(context.canvas).height();
+      var width = JQ(ctx2d.canvas).width();
+      var height = JQ(ctx2d.canvas).height();
 
-      self.getContext = function () {
-        return context;
-      };
-
-      self.getWidth = function () {
+      this.width = function () {
         return width;
       };
 
-      self.getHeight = function () {
+      this.height = function () {
         return height;
       };
 
-      self.clear = function () {
-        self.resetTransform();
-        context.clearRect(0, 0, width, height);
-        return self;
+      this.clear = function () {
+        ctx2d.setTransform(1, 0, 0, 1, 0, 0);
+        ctx2d.clearRect(0, 0, width, height);
+        return _this;
       };
 
-      self.resetTransform = function () {
-        context.setTransform(1, 0, 0, 1, 0, 0);
-        return self;
+      this.move_to = function (x, y) {
+        ctx2d.moveTo(x, y);
+        return _this;
       };
 
-      self.translate = function (x, y) {
-        context.translate(x, y);
-        return self;
+      this.translate = function (x, y) {
+        ctx2d.translate(x, y);
+        return _this;
       };
 
-      self.rotate = function (alpha) {
-        context.rotate(Math.PI * alpha / 180);
-        return self;
+      this.opacity = function (opacity) {
+        ctx2d.globalAlpha = opacity;
+        return _this;
       };
 
-      self.opacity = function (opacity) {
-        context.globalAlpha = opacity;
-        return self;
+      this.path = function () {
+        ctx2d.beginPath();
+        return _this;
       };
 
-      self.path = function () {
-        return new Path(self);
+      this.fill = function (fillStyle) {
+        ctx2d.fillStyle = fillStyle;
+        ctx2d.fill();
+        return _this;
+      };
+
+      this.stroke = function (lineWidth, strokeStyle) {
+        ctx2d.lineWidth = lineWidth;
+        ctx2d.strokeStyle = strokeStyle;
+        ctx2d.stroke();
+        return _this;
+      };
+
+      this.circle = function (x, y, radius) {
+        ctx2d.arc(x, y, radius, 0, 2 * Math.PI, false);
+        return _this;
       };
     }
 
-    Objects.Ctx = Ctx;
-  })();
-
-  (function () {
-    /* globals JQ Objects */
-    function CanvasEffect(twinkleEvent, width, height, frame, callback) {
-      if (!(this instanceof Objects.CanvasEffect)) {
-        return new Objects.CanvasEffect(twinkleEvent, width, height, frame, callback);
-      }
-
-      var element = twinkleEvent.element;
-      var x = twinkleEvent.position.left;
-      var y = twinkleEvent.position.top;
+    var canvas_run = function canvas_run(tev, width, height, frame, callback, duration, fps) {
       var css = {
         position: 'absolute',
         zIndex: 1000,
         display: 'block',
-        left: x - width * 0.5,
-        top: y - height * 0.5,
+        left: tev.position.left - width * 0.5,
+        top: tev.position.top - height * 0.5,
         width: width,
         height: height
       };
 
-      this.run = function (duration, fps) {
-        var $canvas;
-        var ctx;
-        var i;
-        var frameCount = duration / 1000 * fps;
-        var delta = 1 / frameCount;
-
-        function setFrameTimer(fraction) {
-          setTimeout(function () {
-            if (ctx) {
-              frame({
-                ctx: ctx,
-                frac: fraction,
-                millis: duration * fraction
-              });
-            }
-          }, duration * fraction);
-        }
-
-        function cleanUp() {
-          $canvas.remove();
-          $canvas = undefined;
-          ctx = undefined;
-
-          if (callback instanceof Function) {
-            callback();
-          }
-        }
-
-        function blockEvents(event) {
-          event.stopImmediatePropagation();
-          event.preventDefault();
-          return false;
-        }
-
-        $canvas = JQ('<canvas />').attr('width', width).attr('height', height).css(css);
-        JQ(element).after($canvas);
-        $canvas.bind('click dblclick mousedown mouseenter mouseover mousemove', blockEvents);
-        ctx = new Objects.Ctx($canvas.get(0).getContext('2d'));
-
-        for (i = 0; i <= frameCount; i += 1) {
-          setFrameTimer(i * delta);
-        }
-
-        setTimeout(cleanUp, duration);
+      var block_ev = function block_ev(ev) {
+        ev.stopImmediatePropagation();
+        ev.preventDefault();
+        return false;
       };
-    }
 
-    Objects.CanvasEffect = CanvasEffect;
+      var $canvas = JQ('<canvas />').attr('width', width).attr('height', height).css(css);
+      JQ(tev.element).after($canvas);
+      $canvas.bind('click dblclick mousedown mouseenter mouseover mousemove', block_ev);
+      var ctx = new Ctx($canvas.get(0).getContext('2d'));
+
+      var set_frame_timer = function set_frame_timer(frac) {
+        setTimeout(function () {
+          if (ctx) {
+            frame({
+              ctx: ctx,
+              frac: frac,
+              millis: duration * frac
+            });
+          }
+        }, duration * frac);
+      };
+
+      var clean_up = function clean_up() {
+        $canvas.remove();
+        $canvas = undefined;
+        ctx = undefined;
+
+        if (typeof callback === 'function') {
+          callback();
+        }
+      };
+
+      var frame_count = duration / 1000 * fps;
+
+      for (var i = 0; i <= frame_count; i += 1) {
+        set_frame_timer(i / frame_count);
+      }
+
+      setTimeout(clean_up, duration);
+    };
+
+    Objects.canvas_run = canvas_run;
   })();
 
   (function () {
     /* globals JQ Objects */
-    var DEFAULTS = {
+    var SPLASH_DEFAULTS = {
       color: 'rgba(255,0,0,0.5)',
       radius: 300,
       duration: 1000
     };
 
-    function SplashEffect() {
-      this.id = 'splash';
+    var splash = function splash(tev, options, callback) {
+      var settings = _objectSpread({}, SPLASH_DEFAULTS, options);
 
-      this.run = function (twinkleEvent, options, callback) {
-        var settings = _objectSpread({}, DEFAULTS, options);
+      var size = settings.radius * 2;
+      var opa_ipl = Objects.interpolate([0.4, 1, 0]);
+      var radius_ipl = Objects.interpolate([0, settings.radius]);
 
-        var size = settings.radius * 2;
-        var opacityIpl = new Objects.Interpolator([0.4, 1, 0]);
-        var radiusIpl = new Objects.Interpolator([0, settings.radius]);
-
-        var frame = function frame(ev) {
-          var radius = radiusIpl.get(ev.frac);
-          var opacity = opacityIpl.get(ev.frac);
-          var ctx = ev.ctx;
-          ctx.clear().opacity(opacity).path().circle(ctx.getWidth() * 0.5, ctx.getHeight() * 0.5, radius).fill(settings.color);
-        };
-
-        new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
+      var frame = function frame(ev) {
+        var radius = radius_ipl(ev.frac);
+        var opacity = opa_ipl(ev.frac);
+        var ctx = ev.ctx;
+        ctx.clear().opacity(opacity).path().circle(ctx.width() * 0.5, ctx.height() * 0.5, radius).fill(settings.color);
       };
-    }
 
-    JQ.twinkle.add(new SplashEffect());
-  })();
-
-  (function () {
-    /* globals JQ Objects */
-    var DEFAULTS = {
-      color: 'rgba(255,0,0,0.5)',
-      radius: 300,
-      duration: 1000,
-      width: 2
+      Objects.canvas_run(tev, size, size, frame, callback, settings.duration, 25);
     };
 
-    function DropEffect() {
-      this.id = 'drop';
-
-      this.run = function (twinkleEvent, options, callback) {
-        var settings = _objectSpread({}, DEFAULTS, options);
-
-        var size = settings.radius * 2;
-        var opa_ipl = new Objects.Interpolator([0.4, 1, 0]);
-        var radius_ipl = new Objects.Interpolator([0, settings.radius]);
-
-        var frame = function frame(ev) {
-          var radius = radius_ipl.get(ev.frac);
-          var opacity = opa_ipl.get(ev.frac);
-          var ctx = ev.ctx;
-          ctx.clear().opacity(opacity).path().circle(ctx.getWidth() * 0.5, ctx.getHeight() * 0.5, radius).stroke(settings.width, settings.color);
-        };
-
-        new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
-      };
-    }
-
-    JQ.twinkle.add(new DropEffect());
-  })();
-
-  (function () {
-    /* globals JQ Objects */
-    var DEFAULTS = {
-      color: 'rgba(255,0,0,0.5)',
-      radius: 300,
-      duration: 1000,
-      width: 2,
-      count: 3,
-      delay: 100
-    };
-
-    function DropsEffect() {
-      this.id = 'drops';
-
-      this.run = function (twinkleEvent, options, callback) {
-        var settings = _objectSpread({}, DEFAULTS, options);
-
-        var size = settings.radius * 2;
-        var opa_ipl = new Objects.Interpolator([0.4, 1, 0]);
-        var radius_ipl = new Objects.Interpolator([0, settings.radius]);
-        var scale = (settings.duration - (settings.count - 1) * settings.delay) / settings.duration;
-        var offset = settings.delay / settings.duration;
-
-        var frame = function frame(ev) {
-          var i;
-          var frac;
-          var radius;
-          var opacity;
-          var ctx = ev.ctx;
-          var width = ctx.getWidth();
-          var height = ctx.getHeight();
-          ctx.clear();
-
-          for (i = 0; i < settings.count; i += 1) {
-            frac = Objects.Interpolator.scale(ev.frac, scale, offset * i);
-
-            if (frac !== undefined) {
-              radius = radius_ipl.get(frac);
-              opacity = opa_ipl.get(frac);
-              ctx.opacity(opacity).path().circle(width * 0.5, height * 0.5, radius).stroke(settings.width, settings.color);
-            }
-          }
-        };
-
-        new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
-      };
-    }
-
-    JQ.twinkle.add(new DropsEffect());
-  })();
-
-  (function () {
-    /* globals JQ Objects */
-    var DEFAULTS = {
+    var PULSE_DEFAULTS = {
       color: 'rgba(255,0,0,0.5)',
       radius: 100,
       duration: 3000
     };
 
-    function PulseEffect() {
-      this.id = 'pulse';
+    var pulse = function pulse(tev, options, callback) {
+      var settings = _objectSpread({}, PULSE_DEFAULTS, options);
 
-      this.run = function (twinkleEvent, options, callback) {
-        var settings = _objectSpread({}, DEFAULTS, options);
+      var size = settings.radius * 2;
+      var opa_ipl = Objects.interpolate([0, 1, 0.6, 1, 0.6, 1, 0]);
+      var radius_ipl = Objects.interpolate([0, settings.radius, settings.radius * 0.6, settings.radius, settings.radius * 0.6, settings.radius, 0]);
 
-        var size = settings.radius * 2;
-        var opacityIpl = new Objects.Interpolator([0, 1, 0.6, 1, 0.6, 1, 0]);
-        var radiusIpl = new Objects.Interpolator([0, settings.radius, settings.radius * 0.6, settings.radius, settings.radius * 0.6, settings.radius, 0]);
-
-        var frame = function frame(ev) {
-          var radius = radiusIpl.get(ev.frac);
-          var opacity = opacityIpl.get(ev.frac);
-          var ctx = ev.ctx;
-          ctx.clear().opacity(opacity).path().circle(ctx.getWidth() * 0.5, ctx.getHeight() * 0.5, radius).fill(settings.color);
-        };
-
-        new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
+      var frame = function frame(ev) {
+        var radius = radius_ipl(ev.frac);
+        var opacity = opa_ipl(ev.frac);
+        var ctx = ev.ctx;
+        ctx.clear().opacity(opacity).path().circle(ctx.width() * 0.5, ctx.height() * 0.5, radius).fill(settings.color);
       };
-    }
 
-    JQ.twinkle.add(new PulseEffect());
-  })();
+      Objects.canvas_run(tev, size, size, frame, callback, settings.duration, 25);
+    };
 
-  (function () {
-    /* globals JQ Objects */
-    var DEFAULTS = {
+    var ORBIT_DEFAULTS = {
       color: 'rgba(255,0,0,0.5)',
       radius: 100,
       duration: 3000,
@@ -649,43 +443,120 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       circulations: 1.5
     };
 
-    function OrbitEffect() {
-      this.id = 'orbit';
+    var orbit = function orbit(tev, options, callback) {
+      var settings = _objectSpread({}, ORBIT_DEFAULTS, options);
 
-      this.run = function (twinkleEvent, options, callback) {
-        var settings = _objectSpread({}, DEFAULTS, options);
+      var size = settings.radius * 2;
+      var opa_ipl = Objects.interpolate([0.4, 1, 1, 0.4]);
+      var r = settings.radius - settings.satellitesRadius;
+      var radius_ipl = Objects.interpolate([0, r, r, 0]);
 
-        var size = settings.radius * 2;
-        var opa_ipl = new Objects.Interpolator([0.4, 1, 1, 0.4]);
-        var r = settings.radius - settings.satellitesRadius;
-        var radius_ipl = new Objects.Interpolator([0, r, r, 0]);
+      var frame = function frame(ev) {
+        var radius = radius_ipl(ev.frac);
+        var opacity = opa_ipl(ev.frac);
+        var bog = Math.PI * 2 * settings.circulations * ev.frac;
+        var ctx = ev.ctx;
+        var i;
+        var x;
+        var y;
+        ctx.clear().opacity(opacity).translate(ctx.width() * 0.5, ctx.height() * 0.5);
+        var path = ctx.path();
 
-        function frame(frameEvent) {
-          var radius = radius_ipl.get(frameEvent.frac);
-          var opacity = opa_ipl.get(frameEvent.frac);
-          var bog = Math.PI * 2 * settings.circulations * frameEvent.frac;
-          var ctx = frameEvent.ctx;
-          var i;
-          var x;
-          var y;
-          ctx.clear().opacity(opacity).translate(ctx.getWidth() * 0.5, ctx.getHeight() * 0.5);
-          var path = ctx.path();
-
-          for (i = 0; i < settings.satellites; i += 1) {
-            bog += Math.PI * 2 / settings.satellites;
-            x = Math.cos(bog) * radius;
-            y = Math.sin(bog) * radius;
-            ctx.getContext().moveTo(x, y);
-            path.circle(x, y, settings.satellitesRadius);
-          }
-
-          path.fill(settings.color);
+        for (i = 0; i < settings.satellites; i += 1) {
+          bog += Math.PI * 2 / settings.satellites;
+          x = Math.cos(bog) * radius;
+          y = Math.sin(bog) * radius;
+          ctx.move_to(x, y);
+          path.circle(x, y, settings.satellitesRadius);
         }
 
-        new Objects.CanvasEffect(twinkleEvent, size, size, frame, callback).run(settings.duration, 25);
+        path.fill(settings.color);
       };
-    }
 
-    JQ.twinkle.add(new OrbitEffect());
+      Objects.canvas_run(tev, size, size, frame, callback, settings.duration, 25);
+    };
+
+    JQ.twinkle.add('splash', splash);
+    JQ.twinkle.add('pulse', pulse);
+    JQ.twinkle.add('orbit', orbit);
+  })();
+
+  (function () {
+    /* globals JQ Objects */
+    var DROP_DEFAULTS = {
+      color: 'rgba(255,0,0,0.5)',
+      radius: 300,
+      duration: 1000,
+      width: 2
+    };
+
+    var drop = function drop(tev, options, callback) {
+      var settings = _objectSpread({}, DROP_DEFAULTS, options);
+
+      var size = settings.radius * 2;
+      var opa_ipl = Objects.interpolate([0.4, 1, 0]);
+      var radius_ipl = Objects.interpolate([0, settings.radius]);
+
+      var frame = function frame(ev) {
+        var radius = radius_ipl(ev.frac);
+        var opacity = opa_ipl(ev.frac);
+        var ctx = ev.ctx;
+        ctx.clear().opacity(opacity).path().circle(ctx.width() * 0.5, ctx.height() * 0.5, radius).stroke(settings.width, settings.color);
+      };
+
+      Objects.canvas_run(tev, size, size, frame, callback, settings.duration, 25);
+    };
+
+    var DROPS_DEFAULTS = {
+      color: 'rgba(255,0,0,0.5)',
+      radius: 300,
+      duration: 1000,
+      width: 2,
+      count: 3,
+      delay: 100
+    };
+
+    var scale_it = function scale_it(x, scale, offset) {
+      scale = scale || 1;
+      offset = offset || 0;
+      x = (x - offset) / scale;
+      return x >= 0 && x <= 1 ? x : undefined;
+    };
+
+    var drops = function drops(tev, options, callback) {
+      var settings = _objectSpread({}, DROPS_DEFAULTS, options);
+
+      var size = settings.radius * 2;
+      var opa_ipl = Objects.interpolate([0.4, 1, 0]);
+      var radius_ipl = Objects.interpolate([0, settings.radius]);
+      var scale = (settings.duration - (settings.count - 1) * settings.delay) / settings.duration;
+      var offset = settings.delay / settings.duration;
+
+      var frame = function frame(ev) {
+        var i;
+        var frac;
+        var radius;
+        var opacity;
+        var ctx = ev.ctx;
+        var width = ctx.width();
+        var height = ctx.height();
+        ctx.clear();
+
+        for (i = 0; i < settings.count; i += 1) {
+          frac = scale_it(ev.frac, scale, offset * i);
+
+          if (frac !== undefined) {
+            radius = radius_ipl(frac);
+            opacity = opa_ipl(frac);
+            ctx.opacity(opacity).path().circle(width * 0.5, height * 0.5, radius).stroke(settings.width, settings.color);
+          }
+        }
+      };
+
+      Objects.canvas_run(tev, size, size, frame, callback, settings.duration, 25);
+    };
+
+    JQ.twinkle.add('drop', drop);
+    JQ.twinkle.add('drops', drops);
   })();
 })();

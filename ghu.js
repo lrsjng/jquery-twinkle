@@ -26,6 +26,7 @@ ghu.task('build:scripts', runtime => {
     return read(`${SRC}/*.js`)
         .then(includeit())
         .then(babel({presets: ['@babel/preset-env']}))
+        // .then(webpack(webpack.cfg_umd(NAME, [SRC])))
         .then(wrap(runtime.commentJs))
         .then(write(mapfn.p(SRC, DIST), {overwrite: true}))
         .then(write(mapfn.p(SRC, BUILD).s('.js', `-${runtime.pkg.version}.js`), {overwrite: true}))
