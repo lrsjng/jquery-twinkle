@@ -1,4 +1,4 @@
-/*! jquery-twinkle v0.9.0 - https://larsjung.de/jquery-twinkle/ */
+/*! jquery-twinkle v0.10.0 - https://larsjung.de/jquery-twinkle/ */
 "use strict";
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -7,7 +7,9 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -48,7 +50,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
 
     var drops = function drops(tev, opts, cb) {
-      var settings = _objectSpread({}, DROPS_DEFAULTS, opts);
+      var settings = _objectSpread(_objectSpread({}, DROPS_DEFAULTS), opts);
 
       var size = settings.radius * 2;
       var alpha_ipl = interpolate([0.4, 1, 0]);
@@ -72,7 +74,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
 
     var drop = function drop(tev, opts, cb) {
-      drops(tev, _objectSpread({}, opts, {
+      drops(tev, _objectSpread(_objectSpread({}, opts), {}, {
         count: 1
       }), cb);
     };
@@ -84,7 +86,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
 
     var splash = function splash(tev, opts, cb) {
-      var settings = _objectSpread({}, SPLASH_DEFAULTS, opts);
+      var settings = _objectSpread(_objectSpread({}, SPLASH_DEFAULTS), opts);
 
       var size = settings.radius * 2;
       var alpha_ipl = interpolate([0.4, 1, 0]);
@@ -106,7 +108,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
 
     var pulse = function pulse(tev, opts, cb) {
-      var settings = _objectSpread({}, PULSE_DEFAULTS, opts);
+      var settings = _objectSpread(_objectSpread({}, PULSE_DEFAULTS), opts);
 
       var size = settings.radius * 2;
       var alpha_ipl = interpolate([0, 1, 0.6, 1, 0.6, 1, 0]);
@@ -131,7 +133,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
 
     var orbit = function orbit(tev, opts, cb) {
-      var settings = _objectSpread({}, ORBIT_DEFAULTS, opts);
+      var settings = _objectSpread(_objectSpread({}, ORBIT_DEFAULTS), opts);
 
       var size = settings.radius * 2;
       var alpha_ipl = interpolate([0.4, 1, 1, 0.4]);
@@ -174,9 +176,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     var FPS = 25;
 
-    var Ctx =
-    /*#__PURE__*/
-    function () {
+    var Ctx = /*#__PURE__*/function () {
       function Ctx(ctx2d) {
         _classCallCheck(this, Ctx);
 
@@ -335,7 +335,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
 
     var splash_css = function splash_css(tev, opts, cb) {
-      var settings = _objectSpread({}, SPLASH_DEFAULTS, opts);
+      var settings = _objectSpread(_objectSpread({}, SPLASH_DEFAULTS), opts);
 
       var css = {
         position: 'absolute',
@@ -363,7 +363,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
 
     var drops_css = function drops_css(tev, opts, cb) {
-      var settings = _objectSpread({}, DROPS_DEFAULTS, opts);
+      var settings = _objectSpread(_objectSpread({}, DROPS_DEFAULTS), opts);
 
       var css = {
         position: 'absolute',
@@ -391,7 +391,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
 
     var drop_css = function drop_css(tev, opts, cb) {
-      drops_css(tev, _objectSpread({}, opts, {
+      drops_css(tev, _objectSpread(_objectSpread({}, opts), {}, {
         count: 1
       }), cb);
     };
@@ -458,7 +458,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
 
     var start_el = function start_el(el, opts) {
-      var settings = _objectSpread({}, DEFAULTS, opts);
+      var settings = _objectSpread(_objectSpread({}, DEFAULTS), opts);
 
       var fn = effects[settings.effect];
 
@@ -493,7 +493,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       };
 
       els.forEach(function (el) {
-        return start_el(el, _objectSpread({}, opts, {
+        return start_el(el, _objectSpread(_objectSpread({}, opts), {}, {
           callback: cb
         }));
       });
